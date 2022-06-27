@@ -7,12 +7,14 @@ namespace Practice.Controllers
     [AllowAnonymous]
     public class RegisterController : BaseUserCredentialsController
     {
+        private static readonly string _emailErrorKey = "User.Email";
+
         public IActionResult Index()
         {
             return RedirectToHomeIfAuthenticated(() => View());
         }
 
-        public async Task<IActionResult> Register(LoginViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             return await RedirectToHomeIfAuthenticated(async () =>
             {
@@ -21,12 +23,23 @@ namespace Practice.Controllers
                     model.PageError = "User not set, something went wrong";
                     return View(nameof(Index), model);
                 }
-                if (!ModelState.IsValid)
-                {
-                    model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                    model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
+
+                model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
+                model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
+                model.EmailError = ModelState[_emailErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
+
+                if (String.IsNullOrWhiteSpace(model.User.Email))
+                    model.EmailError = "Email is required";
+
+                if (model.User.Age == null)
+                    model.AgeError = "Age is required";
+
+                if (model.UsernameError != null 
+                    || model.PasswordError != null
+                    || model.EmailError != null
+                    || model.AgeError != null)
                     return View(nameof(Index), model);
-                }
+
 
                 var existing = UserService.FindByUsername(model.User.Username);
                 if (existing != null)

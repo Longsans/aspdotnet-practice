@@ -1,4 +1,4 @@
-﻿@model Practice.ViewModels.LoginViewModel
+﻿@model Practice.ViewModels.RegisterViewModel
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Register";
@@ -15,13 +15,21 @@
                 <p class="text-start text-danger">
                     @Model?.PageError
                 </p>
-                <input class="d-block w-100" name="User.username" type="text" placeholder="Username"/>
+                <input class="d-block w-100" name="User.username" type="text" placeholder="Username" />
                 <p class="text-start text-danger mb-3">
                     @Model?.UsernameError
                 </p>
-                <input class="d-block w-100" name="User.password" type="password" placeholder="Password"/>
-                <p class="text-start text-danger mb-4">
+                <input class="d-block w-100" name="User.password" type="password" placeholder="Password" />
+                <p class="text-start text-danger mb-3">
                     @Model?.PasswordError
+                </p>
+                <input class="d-block w-100" name="User.Email" type="email" placeholder="Email" />
+                <p class="text-start text-danger mb-3">
+                    @Model?.EmailError
+                </p>
+                <input class="d-block mb-2 number-box" name="User.Age" type="number" min="0" max="200" placeholder="Age" />
+                <p class="text-start text-danger mb-4">
+                    @Model?.AgeError
                 </p>
                 <input class="btn btn-danger d-block mb-3 w-100" type="submit" value="Register"/>
             </form>

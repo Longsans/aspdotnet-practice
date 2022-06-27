@@ -9,9 +9,19 @@
         <div class="d-flex flex-column">
             <h1 class="fw-normal text-start mt-3 mb-4">Login</h1>
             <form class="custom-width" asp-controller="Login" asp-action="Authenticate">
-                <p class="text-start text-danger mb-3">
-                    @Model?.PageError
-                </p>
+                <div class="text-start mb-3">
+                    @if (Model?.PageError != null) {
+                        <p class="text-danger">
+                            @Model?.PageError
+                        </p>
+                    }
+                    else if (Model?.SuccessMessage != null)
+                    {
+                        <p class="text-success">
+                            @Model?.SuccessMessage
+                        </p>
+                    }
+                </div>
                 <input class="d-block w-100" asp-for="User!.Username" type="text" placeholder="Username"/>
                 <p class="text-start text-danger mb-3">
                     @Model?.UsernameError

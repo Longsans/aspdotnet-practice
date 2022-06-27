@@ -36,3 +36,7 @@ html {
 .fixed-line-24 {
     min-height: 24px;
 }
+
+.number-box {
+    width: 75px;
+}

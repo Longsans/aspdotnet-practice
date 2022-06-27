@@ -38,22 +38,14 @@ namespace Practice.Controllers
             }
             userInfo.User.Username = HttpContext.User.Identity!.Name!;
 
-            bool invalid = false;
-            if (String.IsNullOrWhiteSpace(userInfo.User.Email))
-            {
-                userInfo.EmailError = "Email is required";
-                invalid = true;
-            }
-            if (userInfo.User.Age == null)
-            {
-                userInfo.AgeError = "Age is required";
-                invalid = true;
-            }
-            if (invalid)
-                return View(nameof(Index), model);
-
             userInfo.EmailError = ModelState[_emailErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-            if (userInfo.EmailError != null)
+            if (String.IsNullOrWhiteSpace(userInfo.User.Email))
+                userInfo.EmailError = "Email is required";
+
+            if (userInfo.User.Age == null)
+                userInfo.AgeError = "Age is required";
+
+            if (userInfo.EmailError != null || userInfo.AgeError != null)
                 return View(nameof(Index), model);
 
             await UserService.UpdateUserInfo(userInfo.User);
@@ -95,8 +87,9 @@ namespace Practice.Controllers
 
             user.Password = changePwd.NewPassword!;
             await UserService.UpdateUserPassword(user);
-            changePwd.SuccessMessage = "Change password success!";
-            return View(nameof(Index), model);
+
+            TempData["SuccessMessage"] = "Your password has been changed successfully, please log in again";
+            return RedirectToAction("Logout", "Login");
         }
     }
 }

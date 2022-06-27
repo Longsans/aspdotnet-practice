@@ -11,19 +11,16 @@ namespace Practice.Controllers
     public class LoginController : BaseUserCredentialsController
     {
         [AllowAnonymous]
-        public IActionResult Index(bool loginRequired = false)
+        public IActionResult Index()
         {
             return RedirectToHomeIfAuthenticated(() =>
             {
-                if (loginRequired)
+                var model = new LoginViewModel
                 {
-                    var model = new LoginViewModel
-                    {
-                        PageError = "You must login first"
-                    };
-                    return View(model);
-                }
-                return View();
+                    PageError = (string?)TempData["Error"],
+                    SuccessMessage = (string?)TempData["SuccessMessage"]
+                };
+                return View(model);
             });
         }
 

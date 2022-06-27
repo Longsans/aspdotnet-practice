@@ -12,24 +12,6 @@ namespace Practice.Controllers
         protected static readonly string _usernameErrorKey = "User.Username";
         protected static readonly string _passwordErrorKey = "User.Password";
 
-        protected IActionResult RedirectToLogin(Func<IActionResult> next)
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString(_sessionKeyName)))
-            {
-                return RedirectToAction("Index", "Login", new { loginRequired = true });
-            }
-            return next();
-        }
-
-        protected async Task<IActionResult> RedirectToLogin(Func<Task<IActionResult>> next)
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString(_sessionKeyName)))
-            {
-                return RedirectToAction("Index", "Login", new { loginRequired = true });
-            }
-            return await next();
-        }
-
         protected IActionResult RedirectToHomeIfAuthenticated(Func<IActionResult> next)
         {
             if (HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
