@@ -17,9 +17,15 @@
                     @Model?.UsernameError
                 </p>
                 <input class="d-block w-100" name="User.password" type="password" placeholder="Password"/>
-                <p class="text-start text-danger mb-4">
+                <p class="text-start text-danger mb-2">
                     @Model?.PasswordError
                 </p>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" value="" id="rememberPwd" name="rememberPassword">
+                    <label class="form-check-label" for="rememberPwd">
+                        Remember me
+                    </label>
+                </div>
                 <input class="btn btn-primary d-block mb-3 w-100" type="submit" value="Login"/>
             </form>
         </div>
