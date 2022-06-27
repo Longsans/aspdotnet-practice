@@ -1,0 +1,38 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.custom-width {
+    width: 259px;
+}
+
+.pop {
+    z-index: 1060;
+}
+
+.m-footer {
+    height: 60px;
+}
+
+.pad-s {
+    padding-left: 150px;
+}
+
+.pad-e {
+    padding-right: 160px;
+}
+
+.fixed-line-24 {
+    min-height: 24px;
+}

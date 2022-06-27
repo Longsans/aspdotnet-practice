@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    string _sessionKeyName = "username";
+}
+
+<div class="d-flex flex-grow-1 align-items-center justify-content-center">
+    <div class="text-center">
+        <h1 class="display-4">Welcome, @Context.Session.GetString(_sessionKeyName)</h1>
+        <p>Thanks for stopping by, have a wonderful day.</p>
+        <img class="mt-5 w-50 h-auto" src="~/images/tyler1-hi.jpg"/>
+        <p class="position-absolute end-0 bottom-0 me-4 text-muted pop">
+            Image courtesy of <a href="https://www.twitch.tv/loltyler1" target="_blank" class="text-decoration-none">Tyler1</a>.
+        </p>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+﻿@model Practice.ViewModels.LoginViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Login";
+}
+
+<div class="d-flex flex-column flex-grow-1 justify-content-center">
+    <div class="d-flex pad-s">
+        <div class="d-flex flex-column">
+            <h1 class="fw-normal text-start mt-3 mb-4">Login</h1>
+            <form class="custom-width" asp-controller="Login" asp-action="Authenticate">
+                <p class="text-start text-danger mb-3">
+                    @Model?.PageError
+                </p>
+                <input class="d-block w-100" name="User.username" type="text" placeholder="Username"/>
+                <p class="text-start text-danger mb-3">
+                    @Model?.UsernameError
+                </p>
+                <input class="d-block w-100" name="User.password" type="password" placeholder="Password"/>
+                <p class="text-start text-danger mb-4">
+                    @Model?.PasswordError
+                </p>
+                <input class="btn btn-primary d-block mb-3 w-100" type="submit" value="Login"/>
+            </form>
+        </div>
+        <div class="flex-grow-1"></div>
+    </div>
+</div>

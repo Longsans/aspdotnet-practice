@@ -1,0 +1,62 @@
+﻿@model Practice.ViewModels.AccountSettingsViewModel
+@{
+    Layout = "_SettingsLayout";
+    ViewData["Title"] = "Account Settings";
+}
+
+<div>
+    <form method="post">
+        <h1>Personal information</h1>
+        <hr />
+        <div class="d-flex flex-column">
+            <div class="d-flex flex-column align-items-start text-muted">
+                <div class="mb-2">
+                        <p class="fw-bold mb-2">Username</p>
+                        <p class="fw-normal text-dark">@Model.UserInfo!.User!.Username</p>
+                </div>
+                <div class="d-flex align-items-start">
+                    <div class="me-4">
+                        <p class="fw-bold mb-2">Email</p>
+                        <input type="email" class="fw-normal mb-2" name="UserInfo.User.Email" value="@Model.UserInfo.User.Email" />
+                        <p class="text-danger">@Model.UserInfo.EmailError</p>
+                    </div>
+                    <div>
+                        <p class="fw-bold mb-2">Age</p>
+                        <input type="number" min="0" max="200" class="fw-normal mb-2 number-box" name="UserInfo.User.Age" value="@Model.UserInfo.User.Age"/>
+                        <p class="text-danger">@Model.UserInfo.AgeError</p>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <p class="text-success me-4">@Model.UserInfo!.SuccessMessage</p>
+                <input asp-controller="AccountSettings" asp-action="SaveUserInfo" type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
+            </div>
+        </div>
+        <br />
+        <h1>Account security</h1>
+        <hr />
+        <div class="d-flex flex-column mt-4">
+            <div class="d-flex justify-content-start text-muted">
+                <div class="d-flex flex-column align-items-start me-4">
+                    <p class="fw-bold mb-4">Current password:</p>
+                    <p class="fw-bold mb-4">New password:</p>
+                    <p class="fw-bold mb-4">Re-enter new password:</p>
+                </div>
+                <div class="d-flex flex-column align-items-start me-4">
+                    <input type="password" class="mb-3" name="ChangePassword.CurrentPassword"/>
+                    <input type="password" class="mb-3" name="ChangePassword.NewPassword"/>
+                    <input type="password" class="mb-3" name="ChangePassword.RePassword"/>
+                </div>
+                <div class="d-flex flex-column align-items-start">
+                    <p class="text-danger fixed-line-24 mb-4">@Model.ChangePassword!.CurrentPasswordError</p>
+                    <p class="text-danger fixed-line-24 mb-4">@Model.ChangePassword!.NewPasswordError</p>
+                    <p class="text-danger fixed-line-24 mb-4">@Model.ChangePassword!.RePasswordError</p>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <p class="text-success me-4">@Model.ChangePassword!.SuccessMessage</p>
+                <input asp-controller="AccountSettings" asp-action="SavePassword" type="submit" class="btn btn-primary me-4" value="Change password"/>
+            </div>
+        </div>
+    </form>
+</div>

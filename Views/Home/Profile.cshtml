@@ -1,0 +1,32 @@
+﻿@model Practice.ViewModels.BaseUserViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Profile";
+    string emailDisplay = @Model.User!.Email ?? "Your email hasn't been set yet";
+    string ageDisplay = @Model.User!.Age != null ? @Model.User!.Age.ToString()! : "Your age hasn't been set yet";
+}
+
+<link href="~/css/profile.css" rel="stylesheet" />
+<div class="position-relative overflow-hidden text-center">
+    <img src="~/images/nature-bg.jpg" class="bg-img" />
+    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+        <div class="rounded-3 p-5 mx-auto my-auto d-flex bg-black bg-opacity-50">
+            <div class="m-auto d-flex align-items-start justify-content-center">
+                <img src="~/images/tyler1-hi.jpg" class="rounded-circle avatar me-5" />
+                <div class="ms-4">
+                    <div class="d-flex flex-column align-items-start justify-content-start text-light mb-4 mt-3">
+                        <p class="fw-bold mb-2">Username</p>
+                        <p class="fw-normal mb-4">@Model.User!.Username</p>
+                        <p class="fw-bold mb-2">Email</p>
+                        <p class="fw-normal mb-4">@emailDisplay</p>
+                        <p class="fw-bold mb-2">Age</p>
+                        <p class="fw-normal mb-2">@ageDisplay</p>
+                    </div>
+                    <div class="d-flex">
+                        <a asp-controller="AccountSettings" asp-action="Index" class="btn btn-outline-light me-4">Account and password settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
