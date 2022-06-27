@@ -1,43 +1,52 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Practice.ViewModels;
 
 namespace Practice.Controllers
 {
+    [AllowAnonymous]
     public class RegisterController : BaseUserCredentialsController
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToHomeIfAuthenticated(() => View());
         }
 
         public async Task<IActionResult> Register(LoginViewModel model)
         {
-            if (model.User == null)
+            return await RedirectToHomeIfAuthenticated(async () =>
             {
-                model.PageError = "User not set, something went wrong";
-                return View(nameof(Index), model);
-            }
-            if (!ModelState.IsValid)
-            {
-                model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                return View(nameof(Index), model);
-            }
+                if (model.User == null)
+                {
+                    model.PageError = "User not set, something went wrong";
+                    return View(nameof(Index), model);
+                }
+                if (!ModelState.IsValid)
+                {
+                    model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
+                    model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
+                    return View(nameof(Index), model);
+                }
 
-            var existing = UserService.FindByUsername(model.User.Username);
-            if (existing != null)
-            {
-                model.UsernameError = "Username is taken";
-                return View(nameof(Index), model);
-            }
+                var existing = UserService.FindByUsername(model.User.Username);
+                if (existing != null)
+                {
+                    model.UsernameError = "Username is taken";
+                    return View(nameof(Index), model);
+                }
 
-            await UserService.CreateUser(model.User);
-            return RedirectToAction(nameof(RegisterSuccess));
+                await UserService.CreateUser(model.User);
+                TempData["Registered"] = true;
+                return RedirectToAction(nameof(RegisterSuccess));
+            });
         }
 
         public IActionResult RegisterSuccess()
         {
-            return View();
+            if ((bool?)TempData["Registered"] != true)
+                return RedirectToAction(nameof(Index));
+
+            return RedirectToHomeIfAuthenticated(() => View());
         }
     }
 }

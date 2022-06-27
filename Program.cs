@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Practice.Data;
 using Practice.Services;
 
@@ -25,12 +27,32 @@ builder.Services.AddDbContext<WebAppContext>(
 builder.Services.AddScoped<IUserService, DefaultUserService>();
 builder.Services.AddDistributedMemoryCache();
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(20);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+//builder.Services.AddSession(options =>
+//{
+//    options.IdleTimeout = TimeSpan.FromMinutes(20);
+//    options.Cookie.HttpOnly = true;
+//    options.Cookie.IsEssential = true;
+//});
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(
+    options =>
+    {
+        options.Cookie.Name = "Authentication";
+        options.LoginPath = "/Login";
+    }
+);
+
+builder.Services.AddAuthorization(
+    options =>
+    {
+        options.FallbackPolicy =
+            new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+    }
+);
 
 var app = builder.Build();
 
@@ -61,9 +83,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
-app.UseSession();
+//app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

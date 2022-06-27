@@ -12,16 +12,16 @@
                 <p class="text-start text-danger mb-3">
                     @Model?.PageError
                 </p>
-                <input class="d-block w-100" name="User.username" type="text" placeholder="Username"/>
+                <input class="d-block w-100" asp-for="User!.Username" type="text" placeholder="Username"/>
                 <p class="text-start text-danger mb-3">
                     @Model?.UsernameError
                 </p>
-                <input class="d-block w-100" name="User.password" type="password" placeholder="Password"/>
+                <input class="d-block w-100" asp-for="User!.Password" type="password" placeholder="Password"/>
                 <p class="text-start text-danger mb-2">
                     @Model?.PasswordError
                 </p>
                 <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" value="" id="rememberPwd" name="rememberPassword">
+                    <input class="form-check-input" type="checkbox" id="rememberPwd" asp-for="RememberUser">
                     <label class="form-check-label" for="rememberPwd">
                         Remember me
                     </label>

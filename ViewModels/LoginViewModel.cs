@@ -9,5 +9,7 @@ namespace Practice.ViewModels
 
         [BindNever]
         public string? PasswordError { get; set; }
+
+        public bool RememberUser { get; set; }
     }
 }
