@@ -23,6 +23,11 @@ namespace Practice.Controllers
                 model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
                 return View(nameof(Index), model);
             }
+            if (model.User.Username.ToLower() == model.User.Password.ToLower())
+            {
+                model.PageError = "Password cannot be the same as username!";
+                return View(nameof(Index), model);
+            }
 
             var existing = UserService.FindByUsername(model.User.Username);
             if (existing != null)
