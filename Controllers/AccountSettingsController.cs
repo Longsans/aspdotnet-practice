@@ -79,6 +79,11 @@ namespace Practice.Controllers
                 changePwd.NewPasswordError = "New password cannot be the same as current password";
                 return View(nameof(Index), model);
             }
+            if (changePwd.NewPassword!.ToLower() == model.UserInfo.User.Username.ToLower())
+            {
+                changePwd.NewPasswordError = "Password cannot be the same as username!";
+                return View(nameof(Index), model);
+            }
             if (changePwd.NewPassword != changePwd.RePassword)
             {
                 changePwd.RePasswordError = changePwd.NewPasswordError = "Passwords do not match";
