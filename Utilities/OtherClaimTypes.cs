@@ -2,6 +2,6 @@
 {
     public static class OtherClaimTypes
     {
-        public static string Age => "Age";
+        public const string Age = "Age";
     }
 }

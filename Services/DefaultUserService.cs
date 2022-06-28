@@ -33,6 +33,15 @@ namespace Practice.Services
                     .FirstOrDefault(x => x.Username == username);
         }
 
+        public User? FindByUserCredentials(string username, string password)
+        {
+            var user = FindByUsername(username);
+            if (user?.Password == Encrypter.EncryptSHA256(password))
+                return user;
+
+            return null;
+        }
+
         public async Task UpdateUserInfo(User update)
         {
             var user = FindByUsername(update.Username);

@@ -42,26 +42,27 @@ namespace Practice.Controllers
                 }
 
 
-                var existing = UserService.FindByUsername(model.User.Username);
-                var hashedPwd = Encrypter.EncryptSHA256(model.User.Password);
-                if (existing == null || existing.Password != hashedPwd)
+                if (UserService
+                    .FindByUserCredentials(
+                        model.User.Username, 
+                        model.User.Password) == null)
                 {
                     model.PageError = "Username or password is not correct";
                     return View(nameof(Index), model);
                 }
 
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, existing.Username)
-                };
-                var claimsIdentity = new ClaimsIdentity(claims,
+                var claimsIdentity = new ClaimsIdentity(
+                    new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, model.User.Username)
+                    },
                     CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(claimsIdentity);
                 var authProps = new AuthenticationProperties
                 {
                     IsPersistent = true
                 };
-                if (model.RememberUser != true)
+                if (!model.RememberUser)
                 {
                     authProps.IsPersistent = false;
                     authProps.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1);
