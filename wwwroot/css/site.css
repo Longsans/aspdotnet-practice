@@ -26,11 +26,15 @@ html {
 }
 
 .pad-s {
-    padding-left: 150px;
+    padding-left: 125px;
 }
 
 .pad-e {
-    padding-right: 160px;
+    padding-right: 130px;
+}
+
+.pad-footer {
+    padding-bottom: 60px;
 }
 
 .fixed-line-24 {
@@ -39,4 +43,10 @@ html {
 
 .number-box {
     width: 75px;
+}
+
+.bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
 }

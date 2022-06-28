@@ -6,11 +6,11 @@
 
 <div class="d-flex flex-column flex-grow-1 justify-content-center">
     <div class="d-flex pad-e">
-        <div class="flex-grow-1">
-            @* image *@
+        <div class="flex-grow-1 pad-e">
+            <img src="~/images/street-bg.jpg" class="img-fluid"/>
         </div>
-        <div class="d-flex flex-column align-items-start">
-            <h1 class="fw-normal text-danger mt-3 mb-4">Join the website</h1>
+        <div class="d-flex flex-column align-items-start justify-content-center">
+            <h1 class="fw-normal text-danger overflow-visible mt-3 mb-4" style="white-space:nowrap;">Join the website</h1>
             <form class="custom-width" asp-controller="Register" asp-action="Register">
                 <p class="text-start text-danger">
                     @Model?.PageError
