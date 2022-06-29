@@ -1,4 +1,4 @@
-﻿@model Practice.ViewModels.LoginViewModel
+﻿@model Practice.ViewModels.BaseUserViewModel
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Register";
@@ -6,24 +6,24 @@
 
 <div class="d-flex flex-column flex-grow-1 justify-content-center">
     <div class="d-flex pad-e">
-        <div class="flex-grow-1">
-            @* image *@
+        <div class="flex-grow-1 pad-e">
+            <img src="~/images/street-bg.jpg" class="img-fluid"/>
         </div>
-        <div class="d-flex flex-column align-items-start">
-            <h1 class="fw-normal text-danger mt-3 mb-4">Join the website</h1>
+        <div class="d-flex flex-column align-items-start justify-content-center">
+            <h1 class="fw-normal text-danger overflow-visible mt-3 mb-4" style="white-space:nowrap;">Join the website</h1>
             <form class="custom-width" asp-controller="Register" asp-action="Register">
-                <p class="text-start text-danger">
-                    @Model?.PageError
-                </p>
-                <input class="d-block w-100" name="User.username" type="text" placeholder="Username"/>
-                <p class="text-start text-danger mb-3">
-                    @Model?.UsernameError
-                </p>
-                <input class="d-block w-100" name="User.password" type="password" placeholder="Password"/>
-                <p class="text-start text-danger mb-4">
-                    @Model?.PasswordError
-                </p>
-                <input class="btn btn-danger d-block mb-3 w-100" type="submit" value="Register"/>
+                <div class="text-start text-danger" asp-validation-summary="ModelOnly">
+
+                </div>
+                <input class="d-block w-100" type="text" asp-for="User.Username" placeholder="Username" />
+                <span class="text-start text-danger" asp-validation-for="User.Username"></span>
+                <input class="d-block w-100 mt-3" type="password" asp-for="User.Password" placeholder="Password" />
+                <span class="text-start text-danger" asp-validation-for="User.Password"></span>
+                <input class="d-block w-100 mt-3" type="email" asp-for="User.Email" placeholder="Email" />
+                <span class="text-start text-danger" asp-validation-for="User.Email"></span>
+                <input class="d-block mb-2 number-box mt-3" type="number" min="0" max="200" asp-for="User.Age" placeholder="Age" />
+                <span class="text-start text-danger" asp-validation-for="User.Age"></span>
+                <input class="btn btn-danger d-block mb-3 mt-4 w-100" type="submit" value="Register"/>
             </form>
         </div>
     </div>

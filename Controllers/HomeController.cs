@@ -7,25 +7,20 @@ namespace Practice.Controllers
     {
         public IActionResult Index()
         {
-            return RedirectToLogin(() => View());
+            return View();
         }
 
         public IActionResult Profile()
         {
-            return RedirectToLogin(() =>
-            {
-                var user = UserService.FindByUsername(
-                    HttpContext.Session.GetString(_sessionKeyName)!
-                );
-                if (user == null)
-                    return View("Error");
+            var user = UserService.FindByUsername(HttpContext.User.Identity!.Name!);
+            if (user == null)
+                return View("Error");
 
-                var model = new BaseUserViewModel
-                {
-                    User = user
-                };
-                return View(model);
-            });
+            var model = new BaseUserViewModel
+            {
+                User = user
+            };
+            return View(model);
         }
     }
 }

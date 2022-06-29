@@ -1,54 +1,95 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using FluentValidation;
 using Practice.ViewModels;
-using Practice.Utilities;
+using Practice.Models;
+using Practice.Validators;
 
 namespace Practice.Controllers
 {
     public class LoginController : BaseUserCredentialsController
     {
-        public IActionResult Index(bool loginRequired = false)
+        private readonly IValidator<IUserCredentials> _userCredentialsValidator;
+
+        public LoginController(IValidator<IUserCredentials> userCredentialsValidator)
         {
-            if (loginRequired)
+            _userCredentialsValidator = userCredentialsValidator;
+        }
+
+        [AllowAnonymous]
+        public IActionResult Index()
+        {
+            return RedirectToHomeIfAuthenticated(() =>
             {
                 var model = new LoginViewModel
                 {
-                    PageError = "You must login first"
+                    PageError = (string?)TempData["Error"],
+                    SuccessMessage = (string?)TempData["SuccessMessage"]
                 };
                 return View(model);
-            }
-            return View();
+            });
         }
 
-        public IActionResult Authenticate(LoginViewModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> Authenticate(LoginViewModel model)
         {
-            if (model.User == null)
+            return await RedirectToHomeIfAuthenticated(async () =>
             {
-                model.PageError = "User not set, something went wrong";
-                return View(nameof(Index), model);
-            }
-            if (!ModelState.IsValid)
-            {
-                model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                return View(nameof(Index), model);
-            }
-            
+                var result = await _userCredentialsValidator.ValidateAsync(
+                    model.User,
+                    options =>
+                    {
+                        options.IncludeRuleSets("Username", "LoginPassword");
+                    }
+                );
+                if (!result.IsValid)
+                {
+                    result.AddToModelState(ModelState, "User");
+                    return View(nameof(Index), model);
+                }
 
-            var existing = UserService.FindByUsername(model.User.Username);
-            var hashedPwd = Encrypter.EncryptSHA256(model.User.Password);
-            if (existing == null || existing.Password != hashedPwd)
-            {
-                model.PageError = "Username or password is not correct";
-                return View(nameof(Index), model);
-            }
+                if (UserService
+                    .FindByUserCredentials(
+                        model.User.Username, 
+                        model.User.Password) == null)
+                {
+                    ModelState.AddModelError("", "Username or password is not correct");
+                    return View(nameof(Index), model);
+                }
 
-            HttpContext.Session.SetString(_sessionKeyName, model.User.Username);
-            return RedirectToAction("Index", "Home");
+                var claimsIdentity = new ClaimsIdentity(
+                    new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, model.User.Username)
+                    },
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(claimsIdentity);
+                var authProps = new AuthenticationProperties
+                {
+                    IsPersistent = true
+                };
+                if (!model.RememberUser)
+                {
+                    authProps.IsPersistent = false;
+                    authProps.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1);
+                    authProps.AllowRefresh = false;
+                }
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    principal,
+                    authProps
+                );
+                return RedirectToAction("Index", "Home");
+            });
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction(nameof(Index));
         }
     }

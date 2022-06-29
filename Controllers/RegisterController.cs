@@ -1,48 +1,66 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using FluentValidation;
+using Practice.Validators;
 using Practice.ViewModels;
+using Practice.Models;
 
 namespace Practice.Controllers
 {
+    [AllowAnonymous]
     public class RegisterController : BaseUserCredentialsController
     {
-        public IActionResult Index()
+        private static readonly string _emailErrorKey = "User.Email";
+        private readonly IValidator<User> _userValidator;
+
+        public RegisterController(IValidator<User> userValidator)
         {
-            return View();
+            _userValidator = userValidator;
         }
 
-        public async Task<IActionResult> Register(LoginViewModel model)
+        public IActionResult Index()
         {
-            if (model.User == null)
-            {
-                model.PageError = "User not set, something went wrong";
-                return View(nameof(Index), model);
-            }
-            if (!ModelState.IsValid)
-            {
-                model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                return View(nameof(Index), model);
-            }
-            if (model.User.Username.ToLower() == model.User.Password.ToLower())
-            {
-                model.PageError = "Password cannot be the same as username!";
-                return View(nameof(Index), model);
-            }
+            return RedirectToHomeIfAuthenticated(() => View());
+        }
 
-            var existing = UserService.FindByUsername(model.User.Username);
-            if (existing != null)
+        public async Task<IActionResult> Register(BaseUserViewModel model)
+        {
+            return await RedirectToHomeIfAuthenticated(async () =>
             {
-                model.UsernameError = "Username is taken";
-                return View(nameof(Index), model);
-            }
+                var result = await _userValidator.ValidateAsync(
+                    model.User,
+                    options =>
+                    {
+                        options
+                            .IncludeRuleSets("Username")
+                            .IncludeRuleSets("UserInfo")
+                            .IncludeRulesNotInRuleSet();
+                    }
+                );
+                if (!result.IsValid)
+                {
+                    result.AddToModelState(ModelState, "User");
+                    return View(nameof(Index), model);
+                }
 
-            await UserService.CreateUser(model.User);
-            return RedirectToAction(nameof(RegisterSuccess));
+                if (!UserService.ValidateUsername(model.User.Username))
+                {
+                    ModelState.AddModelError("", "Username is taken");
+                    return View(nameof(Index), model);
+                }
+
+                await UserService.CreateUser(model.User);
+                TempData["Registered"] = true;
+                return RedirectToAction(nameof(RegisterSuccess));
+            });
         }
 
         public IActionResult RegisterSuccess()
         {
-            return View();
+            if ((bool?)TempData["Registered"] != true)
+                return RedirectToAction(nameof(Index));
+
+            return RedirectToHomeIfAuthenticated(() => View());
         }
     }
 }

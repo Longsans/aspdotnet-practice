@@ -1,19 +1,18 @@
 ﻿@{
-    string _sessionKeyName = "username";
-    if(Context.Session.GetString(_sessionKeyName) != null) {
+    if(Context.User.Identity!.IsAuthenticated) {
         <a class="nav-link text-dark d-inline" asp-area="" asp-controller="Home" asp-action="Profile">
-            <text>Profile</text>                 
+            <text>Profile</text>
         </a>
         <a class="nav-link text-danger d-inline" asp-area="" asp-controller="Login" asp-action="Logout">
-            <text>Logout</text>                 
+            <text>Logout</text>
         </a>
     }
     else {
         <a class="nav-link text-dark d-inline" asp-area="" asp-controller="Login" asp-action="Index">
-            <text>Login</text>                 
+            <text>Login</text>
         </a>
         <a class="nav-link text-danger d-inline" asp-area="" asp-controller="Register" asp-action="Index">
-            <text>Register</text>                 
+            <text>Register</text>
         </a>
     }
 }
