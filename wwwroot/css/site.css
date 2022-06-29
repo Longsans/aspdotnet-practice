@@ -50,3 +50,10 @@ html {
     height: 100%;
     object-fit: fill;
 }
+
+div ul, ol {
+    list-style: none;
+    margin-block-start: 0;
+    margin-inline-start: 0;
+    padding-left: 0;
+}

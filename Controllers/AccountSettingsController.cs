@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 using Practice.ViewModels;
-using Practice.Utilities;
 using Practice.Models;
 using Practice.Validators;
 

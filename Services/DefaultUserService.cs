@@ -36,7 +36,6 @@ namespace Practice.Services
         public User? FindByUserCredentials(string username, string password)
         {
             var user = FindByUsername(username);
-            Console.WriteLine(user.Username);
             if (user?.Password == Encrypter.EncryptSHA256(password))
                 return user;
 

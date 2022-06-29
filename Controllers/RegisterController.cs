@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using FluentValidation;
+using Practice.Validators;
 using Practice.ViewModels;
+using Practice.Models;
 
 namespace Practice.Controllers
 {
@@ -8,48 +11,41 @@ namespace Practice.Controllers
     public class RegisterController : BaseUserCredentialsController
     {
         private static readonly string _emailErrorKey = "User.Email";
+        private readonly IValidator<User> _userValidator;
+
+        public RegisterController(IValidator<User> userValidator)
+        {
+            _userValidator = userValidator;
+        }
 
         public IActionResult Index()
         {
             return RedirectToHomeIfAuthenticated(() => View());
         }
 
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(BaseUserViewModel model)
         {
             return await RedirectToHomeIfAuthenticated(async () =>
             {
-                if (model.User == null)
+                var result = await _userValidator.ValidateAsync(
+                    model.User,
+                    options =>
+                    {
+                        options
+                            .IncludeRuleSets("Username")
+                            .IncludeRuleSets("UserInfo")
+                            .IncludeRulesNotInRuleSet();
+                    }
+                );
+                if (!result.IsValid)
                 {
-                    model.PageError = "User not set, something went wrong";
+                    result.AddToModelState(ModelState, "User");
                     return View(nameof(Index), model);
                 }
 
-                model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                model.EmailError = ModelState[_emailErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-
-                if (String.IsNullOrWhiteSpace(model.User.Email))
-                    model.EmailError = "Email is required";
-
-                if (model.User.Age == null)
-                    model.AgeError = "Age is required";
-
-                if (model.UsernameError != null 
-                    || model.PasswordError != null
-                    || model.EmailError != null
-                    || model.AgeError != null)
-                    return View(nameof(Index), model);
-
-            if (model.User.Username.ToLower() == model.User.Password.ToLower())
-            {
-                model.PageError = "Password cannot be the same as username!";
-                return View(nameof(Index), model);
-            }
-
-                var existing = UserService.FindByUsername(model.User.Username);
-                if (existing != null)
+                if (!UserService.ValidateUsername(model.User.Username))
                 {
-                    model.UsernameError = "Username is taken";
+                    ModelState.AddModelError("", "Username is taken");
                     return View(nameof(Index), model);
                 }
 

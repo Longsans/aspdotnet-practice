@@ -9,28 +9,21 @@
         <div class="d-flex flex-column justify-content-center">
             <h1 class="fw-normal text-start mt-3 mb-4">Login</h1>
             <form class="custom-width" asp-controller="Login" asp-action="Authenticate">
-                <div class="text-start mb-3">
-                    @if (Model?.PageError != null) {
-                        <p class="text-danger">
-                            @Model?.PageError
-                        </p>
-                    }
-                    else if (Model?.SuccessMessage != null)
-                    {
-                        <p class="text-success">
-                            @Model?.SuccessMessage
-                        </p>
-                    }
-                </div>
+                @if (Model?.SuccessMessage != null)
+                {
+                    <p class="text-success">
+                        @Model?.SuccessMessage
+                    </p>
+                }
+                else
+                {
+                    <div class="text-start text-danger mb-3" asp-validation-summary="ModelOnly"></div>
+                }
                 <input class="d-block w-100" asp-for="User.Username" type="text" placeholder="Username"/>
-                <p class="text-start text-danger mb-3">
-                    @Model?.UsernameError
-                </p>
-                <input class="d-block w-100" asp-for="User.Password" type="password" placeholder="Password"/>
-                <p class="text-start text-danger mb-2">
-                    @Model?.PasswordError
-                </p>
-                <div class="form-check mb-4">
+                <span class="text-start text-danger" asp-validation-for="User.Username"></span>
+                <input class="d-block w-100 mt-3" asp-for="User.Password" type="password" placeholder="Password"/>
+                <span class="text-start text-danger" asp-validation-for="User.Password"></span>
+                <div class="form-check mb-4 mt-2">
                     <input class="form-check-input" type="checkbox" id="rememberPwd" asp-for="RememberUser">
                     <label class="form-check-label" for="rememberPwd">
                         Remember me

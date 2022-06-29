@@ -1,6 +1,6 @@
 ﻿namespace Practice.ViewModels
 {
-    public class LoginViewModel : BaseUserCredentialsViewModel
+    public class LoginViewModel : BaseUserViewModel
     {
         public bool RememberUser { get; set; }
     }

@@ -2,14 +2,23 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Practice.ViewModels;
-using Practice.Utilities;
 using System.Security.Claims;
+using FluentValidation;
+using Practice.ViewModels;
+using Practice.Models;
+using Practice.Validators;
 
 namespace Practice.Controllers
 {
     public class LoginController : BaseUserCredentialsController
     {
+        private readonly IValidator<IUserCredentials> _userCredentialsValidator;
+
+        public LoginController(IValidator<IUserCredentials> userCredentialsValidator)
+        {
+            _userCredentialsValidator = userCredentialsValidator;
+        }
+
         [AllowAnonymous]
         public IActionResult Index()
         {
@@ -29,25 +38,25 @@ namespace Practice.Controllers
         {
             return await RedirectToHomeIfAuthenticated(async () =>
             {
-                if (model.User == null)
+                var result = await _userCredentialsValidator.ValidateAsync(
+                    model.User,
+                    options =>
+                    {
+                        options.IncludeRuleSets("Username", "LoginPassword");
+                    }
+                );
+                if (!result.IsValid)
                 {
-                    model.PageError = "User not set, something went wrong";
+                    result.AddToModelState(ModelState, "User");
                     return View(nameof(Index), model);
                 }
-                if (!ModelState.IsValid)
-                {
-                    model.UsernameError = ModelState[_usernameErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                    model.PasswordError = ModelState[_passwordErrorKey]?.Errors.FirstOrDefault()?.ErrorMessage;
-                    return View(nameof(Index), model);
-                }
-
 
                 if (UserService
                     .FindByUserCredentials(
                         model.User.Username, 
                         model.User.Password) == null)
                 {
-                    model.PageError = "Username or password is not correct";
+                    ModelState.AddModelError("", "Username or password is not correct");
                     return View(nameof(Index), model);
                 }
 
