@@ -5,8 +5,6 @@ using FluentValidation;
 using Practice.Data;
 using Practice.Services;
 using Practice.Validators;
-using Practice.ViewModels;
-using Practice.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,19 +27,9 @@ builder.Services.AddDbContext<WebAppContext>(
     }
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
-builder.Services.AddScoped<IValidator<IUserInfo>, UserInfoValidator>();
-builder.Services.AddScoped<IValidator<IUserCredentials>, UserCredentialsValidator>();
-builder.Services.AddScoped<IValidator<User>, UserValidator>();
-builder.Services.AddScoped<IValidator<AccountSettingsViewModel>, AccountSettingsValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AccountSettingsValidator>();
 
 builder.Services.AddDistributedMemoryCache();
-
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromMinutes(20);
-//    options.Cookie.HttpOnly = true;
-//    options.Cookie.IsEssential = true;
-//});
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -95,8 +83,6 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-//app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
