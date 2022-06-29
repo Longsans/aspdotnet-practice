@@ -36,10 +36,17 @@ namespace Practice.Services
         public User? FindByUserCredentials(string username, string password)
         {
             var user = FindByUsername(username);
+            Console.WriteLine(user.Username);
             if (user?.Password == Encrypter.EncryptSHA256(password))
                 return user;
 
             return null;
+        }
+
+        public bool ValidateUsername(string username)
+        {
+            var user = FindByUsername(username);
+            return user == null;
         }
 
         public async Task UpdateUserInfo(User update)

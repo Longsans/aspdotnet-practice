@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using FluentValidation;
 using Practice.Data;
 using Practice.Services;
+using Practice.Validators;
+using Practice.ViewModels;
+using Practice.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +29,11 @@ builder.Services.AddDbContext<WebAppContext>(
     }
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
+builder.Services.AddScoped<IValidator<IUserInfo>, UserInfoValidator>();
+builder.Services.AddScoped<IValidator<IUserCredentials>, UserCredentialsValidator>();
+builder.Services.AddScoped<IValidator<User>, UserValidator>();
+builder.Services.AddScoped<IValidator<AccountSettingsViewModel>, AccountSettingsValidator>();
+
 builder.Services.AddDistributedMemoryCache();
 
 //builder.Services.AddSession(options =>

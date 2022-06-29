@@ -3,3 +3,7 @@
     height: 200px;
 }
 
+.textonly-input {
+    background-color: transparent;
+    border: 0;
+}

@@ -2,7 +2,7 @@
 
 namespace Practice.ViewModels
 {
-    public class BasePageErrorAndSuccessMessageViewModel
+    public interface IPageErrorAndSuccessMessage
     {
         [BindNever]
         public string? PageError { get; set; }

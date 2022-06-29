@@ -1,24 +1,14 @@
-﻿namespace Practice.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+using Practice.Models;
+
+namespace Practice.ViewModels
 {
-    public class AccountSettingsViewModel
+    public class AccountSettingsViewModel : BaseUserViewModel
     {
-        public UserInfoViewModel? UserInfo { get; set; }
-        public ChangePasswordViewModel? ChangePassword { get; set; }
+        [Required(ErrorMessage = "Enter current password")]
+        public string CurrentPassword { get; set; }
 
-        public AccountSettingsViewModel() { }
-        public AccountSettingsViewModel(UserInfoViewModel userInfo, ChangePasswordViewModel changePassword)
-        {
-            UserInfo = userInfo;
-            ChangePassword = changePassword;
-        }
-        public AccountSettingsViewModel(UserInfoViewModel userInfo)
-        {
-            UserInfo = userInfo;
-        }
-
-        public AccountSettingsViewModel(ChangePasswordViewModel changePassword)
-        {
-            ChangePassword = changePassword;
-        }
+        [Required(ErrorMessage = "Re-enter your new password")]
+        public string RePassword { get; set; }
     }
 }

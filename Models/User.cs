@@ -2,7 +2,7 @@
 
 namespace Practice.Models
 {
-    public class User
+    public class User : IUserInfo, IUserCredentials
     {
         [Required(ErrorMessage = "{0} is required")]
         [Key]
@@ -28,5 +28,14 @@ namespace Practice.Models
         [RegularExpression("([0-9]+)", ErrorMessage = "Invalid age")]
         [Range(0, 200, ErrorMessage = "{0} must be from {1} to {2}")]
         public int? Age { get; set; }
+
+        public User() { }
+        public User(User u)
+        {
+            Username = u.Username;
+            Password = u.Password;
+            Email = u.Email;
+            Age = u.Age;
+        }
     }
 }

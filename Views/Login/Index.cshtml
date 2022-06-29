@@ -22,11 +22,11 @@
                         </p>
                     }
                 </div>
-                <input class="d-block w-100" asp-for="User!.Username" type="text" placeholder="Username"/>
+                <input class="d-block w-100" asp-for="User.Username" type="text" placeholder="Username"/>
                 <p class="text-start text-danger mb-3">
                     @Model?.UsernameError
                 </p>
-                <input class="d-block w-100" asp-for="User!.Password" type="password" placeholder="Password"/>
+                <input class="d-block w-100" asp-for="User.Password" type="password" placeholder="Password"/>
                 <p class="text-start text-danger mb-2">
                     @Model?.PasswordError
                 </p>
