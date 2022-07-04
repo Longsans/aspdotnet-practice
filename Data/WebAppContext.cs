@@ -1,5 +1,5 @@
-﻿using Practice.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Practice.Models;
 
 namespace Practice.Data
 {
@@ -10,6 +10,12 @@ namespace Practice.Data
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Seed();
+        }
+
         public DbSet<User> Users { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
     }
 }

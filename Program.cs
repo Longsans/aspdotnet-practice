@@ -53,19 +53,6 @@ builder.Services.AddAuthorization(
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<WebAppContext>();
-        DbInitializer.Init(dbContext);
-    }
-    catch (Exception ex)
-    {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred creating the DB.");
-    }
-}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
