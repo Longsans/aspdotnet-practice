@@ -9,6 +9,14 @@ namespace Practice.Validators
         {
             RuleSet("UserInfo", () =>
             {
+                RuleFor(x => x.FirstName)
+                    .NotEmpty().WithMessage(ValidationMessages.NotEmpty)
+                    .Length(1, 20).WithMessage(ValidationMessages.Length);
+
+                RuleFor(x => x.LastName)
+                    .NotEmpty().WithMessage(ValidationMessages.NotEmpty)
+                    .Length(1, 20).WithMessage(ValidationMessages.Length);
+
                 RuleFor(x => x.Email)
                     .NotEmpty().WithMessage(ValidationMessages.NotEmpty)
                     .MaximumLength(30).WithMessage(ValidationMessages.MaxLength)

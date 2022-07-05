@@ -9,22 +9,37 @@
     <form method="post">
         <h1>Personal information</h1>
         <hr />
+        <h3 class="mb-3">Basic information</h3>
         <div class="d-flex flex-column">
-            <div class="d-flex flex-column align-items-start text-muted">
-                <div class="mb-2">
-                        <p class="fw-bold mb-2">Username</p>
-                        <input class="fw-normal text-dark textonly-input pe-none" asp-for="User.Username" readonly/>
+            <div class="d-flex flex-column align-items-start">
+                <div class="mb-3">
+                    <p class="mb-2">Username</p>
+                    <input class="fw-normal text-dark fw-bold textonly-input pe-none" asp-for="User.Username" readonly/>
                 </div>
-                <div class="d-flex align-items-start">
-                    <div class="me-4">
-                        <p class="fw-bold mb-2">Email</p>
-                        <input type="email" class="fw-normal mb-2" asp-for="User.Email" />
-                        <span class="text-danger d-block" asp-validation-for="User.Email"></span>
+                <div class="d-flex flex-column">
+                    <div class="d-flex mb-2">
+                        <div class="me-4" style="width:208px;">
+                            <p class="mb-2">First Name</p>
+                            <input type="text" class="fw-normal mb-2" asp-for="User.FirstName" />
+                            <span class="text-danger d-block" asp-validation-for="User.FirstName"></span>
+                        </div>
+                        <div class="ms-3">
+                            <p class="mb-2">Last Name</p>
+                            <input type="text" class="fw-normal mb-2" asp-for="User.LastName" />
+                            <span class="text-danger d-block" asp-validation-for="User.LastName"></span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="fw-bold mb-2">Age</p>
-                        <input type="number" min="0" max="200" class="fw-normal mb-2 number-box" asp-for="User.Age" />
-                        <span class="text-danger d-block" asp-validation-for="User.Age"></span>
+                    <div class="d-flex">
+                        <div class="me-4" style="width:208px;">
+                            <p class="mb-2">Email</p>
+                            <input type="email" class="fw-normal mb-2" asp-for="User.Email" />
+                            <span class="text-danger d-block" asp-validation-for="User.Email"></span>
+                        </div>
+                        <div class="ms-3">
+                            <p class="mb-2">Age</p>
+                            <input type="number" min="0" max="200" class="fw-normal mb-2 number-box" asp-for="User.Age" />
+                            <span class="text-danger d-block" asp-validation-for="User.Age"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -33,15 +48,35 @@
                 <input asp-controller="AccountSettings" asp-action="SaveUserInfo" type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
             </div>
         </div>
+
+        <h3 class="mb-3">Contact</h3>
+        <div class="d-flex flex-column">
+            <div class="d-flex align-items-start">
+                <div class="me-4" style="width:208px;">
+                    <p class="mb-2">Phone</p>
+                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Phone" />
+                    <span class="text-danger d-block" asp-validation-for="User.Contact.Phone"></span>
+                </div>
+                <div class="ms-3">
+                    <p class="mb-2">Address</p>
+                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Address" />
+                    <span class="text-danger d-block" asp-validation-for="User.Contact.Address"></span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <p class="text-success me-4">@Model.ContactSuccessMessage</p>
+                <input asp-controller="AccountSettings" asp-action="SaveContact" type="submit" class="btn btn-primary align-self-end me-4" value="Save contact"/>
+            </div>
+        </div>
         <br />
         <h1>Account security</h1>
         <hr />
         <div class="d-flex flex-column mt-4">
-            <div class="d-flex justify-content-start text-muted">
+            <div class="d-flex justify-content-start">
                 <div class="d-flex flex-column align-items-start me-4">
-                    <p class="fw-bold mb-4">Current password:</p>
-                    <p class="fw-bold mb-4">New password:</p>
-                    <p class="fw-bold mb-4">Re-enter new password:</p>
+                    <p class="mb-4">Current password:</p>
+                    <p class="mb-4">New password:</p>
+                    <p class="mb-4">Re-enter new password:</p>
                 </div>
                 <div class="d-flex flex-column align-items-start me-4">
                     <input type="password" class="mb-3" asp-for="CurrentPassword"/>

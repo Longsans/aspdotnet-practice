@@ -10,16 +10,21 @@ namespace Practice.Controllers
     {
         private readonly IValidator<IUserInfo> _userInfoValidator;
         private readonly IValidator<AccountSettingsViewModel> _accountSettingsValidator;
+        private readonly IValidator<Contact> _contactValidator;
 
-        public AccountSettingsController(IValidator<IUserInfo> userInfoValidator, IValidator<AccountSettingsViewModel> accountSettingsValidator)
+        public AccountSettingsController(
+            IValidator<IUserInfo> userInfoValidator, 
+            IValidator<AccountSettingsViewModel> accountSettingsValidator,
+            IValidator<Contact> contactValidator)
         {
             _userInfoValidator = userInfoValidator;
             _accountSettingsValidator = accountSettingsValidator;
+            _contactValidator = contactValidator;
         }
 
         public IActionResult Index()
         {
-            var user = UserService.FindByUsername(HttpContext.User.Identity.Name);
+            var user = UserService.FindWithContactByUsername(HttpContext.User.Identity.Name);
             if (user == null)
                 return View("Error");
 
@@ -33,16 +38,16 @@ namespace Practice.Controllers
         public async Task<IActionResult> SaveUserInfo(AccountSettingsViewModel model)
         {
             ModelState.Clear();
-            var result = await _userInfoValidator.ValidateAsync(
+            var validateResult = await _userInfoValidator.ValidateAsync(
                 model.User, 
                 options =>
                 {
                     options.IncludeRuleSets("UserInfo");
                 }
             );
-            if (!result.IsValid)
+            if (!validateResult.IsValid)
             {
-                result.AddToModelState(ModelState, "User");
+                validateResult.AddToModelState(ModelState, "User");
                 return View(nameof(Index), model);
             }
 
@@ -51,19 +56,35 @@ namespace Practice.Controllers
             return View(nameof(Index), model);
         }
 
+        public async Task<IActionResult> SaveContact(AccountSettingsViewModel model)
+        {
+            ModelState.Clear();
+            var validateResult = await _contactValidator.ValidateAsync(model.User.Contact);
+            if (!validateResult.IsValid)
+            {
+                validateResult.AddToModelState(ModelState, "User.Contact");
+                return View(nameof(Index), model);
+            }
+
+            model.User.Contact.UserUsername = model.User.Username;
+            await UserService.AddOrUpdateContactIfExists(model.User.Contact);
+            model.ContactSuccessMessage = "Save contact success!";
+            return View(nameof(Index), model);
+        }
+
         public async Task<IActionResult> SavePassword(AccountSettingsViewModel model)
         {
             ModelState.Clear();
-            var result = await _accountSettingsValidator.ValidateAsync(
+            var validateResult = await _accountSettingsValidator.ValidateAsync(
                 model,
                 options =>
                 {
                     options.IncludeRulesNotInRuleSet();
                 }
             );
-            if (!result.IsValid)
+            if (!validateResult.IsValid)
             {
-                result.AddToModelStatePrefixed(ModelState, new Dictionary<string, string>
+                validateResult.AddToModelStatePrefixed(ModelState, new Dictionary<string, string>
                 {
                     { "Password", "User" }
                 });

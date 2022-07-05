@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Practice.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Practice.ViewModels
 {
@@ -10,5 +10,8 @@ namespace Practice.ViewModels
 
         [Required(ErrorMessage = "Re-enter your new password")]
         public string RePassword { get; set; }
+
+        [BindNever]
+        public string? ContactSuccessMessage { get; set; }
     }
 }
