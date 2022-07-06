@@ -6,6 +6,7 @@ namespace Practice.Services
     {
         User? FindByUsername(string username);
         User? FindWithContactByUsername(string username);
+        User? FindWithContactByUsernameForDisplay(string username);
         User? FindByUserCredentials(string username, string password);
         bool ValidateUsername(string username);
         Task CreateUser(User user);

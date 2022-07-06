@@ -27,6 +27,7 @@ builder.Services.AddDbContext<WebAppContext>(
     }
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
+builder.Services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
 builder.Services.AddValidatorsFromAssemblyContaining<AccountSettingsValidator>();
 
 builder.Services.AddDistributedMemoryCache();

@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 using FluentValidation;
 using Practice.ViewModels;
 using Practice.Models;
 using Practice.Validators;
+using Practice.Services;
 
 namespace Practice.Controllers
 {
     public class LoginController : BaseUserCredentialsController
     {
         private readonly IValidator<IUserCredentials> _userCredentialsValidator;
+        private readonly IAuthenticationService _authService;
 
-        public LoginController(IValidator<IUserCredentials> userCredentialsValidator)
+        public LoginController(IValidator<IUserCredentials> userCredentialsValidator, IAuthenticationService authService)
         {
             _userCredentialsValidator = userCredentialsValidator;
+            _authService = authService;
         }
 
         [AllowAnonymous]
@@ -51,45 +51,24 @@ namespace Practice.Controllers
                     return View(nameof(Index), model);
                 }
 
-                if (UserService
-                    .FindByUserCredentials(
-                        model.User.Username, 
-                        model.User.Password) == null)
+                if (!await _authService.LogIn(
+                        model.User.Username,
+                        model.User.Password,
+                        model.RememberUser,
+                        this.UserService,
+                        this.HttpContext
+                    ))
                 {
                     ModelState.AddModelError("", "Username or password is not correct");
                     return View(nameof(Index), model);
                 }
-
-                var claimsIdentity = new ClaimsIdentity(
-                    new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, model.User.Username)
-                    },
-                    CookieAuthenticationDefaults.AuthenticationScheme);
-                var principal = new ClaimsPrincipal(claimsIdentity);
-                var authProps = new AuthenticationProperties
-                {
-                    IsPersistent = true
-                };
-                if (!model.RememberUser)
-                {
-                    authProps.IsPersistent = false;
-                    authProps.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1);
-                    authProps.AllowRefresh = false;
-                }
-
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    principal,
-                    authProps
-                );
                 return RedirectToAction("Index", "Home");
             });
         }
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _authService.LogOut(this.HttpContext);
             return RedirectToAction(nameof(Index));
         }
     }

@@ -38,8 +38,15 @@ namespace Practice.Services
             return _context.Users
                 .Include(u => u.Contact)
                 .FirstOrDefault(x => x.Username == username);
+        }
 
-        } 
+        public User? FindWithContactByUsernameForDisplay(string username)
+        {
+            return _context.Users
+                .Include(u => u.Contact)
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Username == username);
+        }
 
         public User? FindByUserCredentials(string username, string password)
         {

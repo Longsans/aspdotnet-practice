@@ -24,7 +24,7 @@ namespace Practice.Controllers
 
         public IActionResult Index()
         {
-            var user = UserService.FindWithContactByUsername(HttpContext.User.Identity.Name);
+            var user = UserService.FindWithContactByUsernameForDisplay(HttpContext.User.Identity.Name);
             if (user == null)
                 return View("Error");
 
