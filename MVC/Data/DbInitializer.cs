@@ -1,5 +1,5 @@
 ﻿using Common.Models;
-using Practice.Utilities;
+using Common.Utilities;
 
 namespace Practice.Data
 {

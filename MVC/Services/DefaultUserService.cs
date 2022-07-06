@@ -1,6 +1,6 @@
 ﻿using Common.Models;
+using Common.Utilities;
 using Practice.Data;
-using Practice.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Practice.Services
