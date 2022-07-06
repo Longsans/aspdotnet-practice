@@ -5,11 +5,13 @@ using FluentValidation;
 using Practice.Data;
 using Practice.Services;
 using Practice.Validators;
+using Common.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 // Add services to the container.
+builder.Services.AddCors();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<WebAppContext>(
     options =>
@@ -28,6 +30,7 @@ builder.Services.AddDbContext<WebAppContext>(
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
 builder.Services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AccountSettingsValidator>();
 
 builder.Services.AddDistributedMemoryCache();
@@ -67,6 +70,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors();
 
 app.UseAuthentication();
 

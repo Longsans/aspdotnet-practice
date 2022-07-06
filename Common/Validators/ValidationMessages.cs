@@ -1,4 +1,4 @@
-﻿namespace Practice.Validators
+﻿namespace Common.Validators
 {
     public static class ValidationMessages
     {

@@ -1,4 +1,4 @@
-﻿using Practice.Models;
+﻿using Common.Models;
 
 namespace Practice.Services
 {

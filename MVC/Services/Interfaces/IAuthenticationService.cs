@@ -1,6 +1,4 @@
-﻿using Practice.Models;
-
-namespace Practice.Services
+﻿namespace Practice.Services
 {
     public interface IAuthenticationService
     {
@@ -10,7 +8,7 @@ namespace Practice.Services
             bool rememberUser, 
             IUserService userService,
             HttpContext httpContext);
-        
+
         Task LogOut(HttpContext httpContext);
     }
 }

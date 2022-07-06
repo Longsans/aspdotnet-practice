@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using Practice.Validators;
 using Practice.ViewModels;
-using Practice.Models;
+using Common.Models;
 
 namespace Practice.Controllers
 {

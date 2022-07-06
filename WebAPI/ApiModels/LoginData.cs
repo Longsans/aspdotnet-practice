@@ -1,4 +1,4 @@
-﻿using Practice.Models;
+﻿using Common.Models;
 
 namespace WebAPI.ApiModels
 {

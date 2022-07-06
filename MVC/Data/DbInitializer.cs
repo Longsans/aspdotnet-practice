@@ -1,4 +1,4 @@
-﻿using Practice.Models;
+﻿using Common.Models;
 using Practice.Utilities;
 
 namespace Practice.Data

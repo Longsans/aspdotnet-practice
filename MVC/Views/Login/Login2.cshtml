@@ -3,20 +3,19 @@
     Layout = "_Layout";
     ViewData["Title"] = "Login";
 }
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" async></script>
 
 <div class="d-flex flex-column flex-grow-1 justify-content-center">
     <div class="d-flex pad-s">
         <div class="d-flex flex-column justify-content-center">
             <h1 class="fw-normal text-start mt-3 mb-4">Login</h1>
-            <form class="custom-width">
-                <div class="text-start text-danger mb-3" asp-validation-summary="ModelOnly"></div>
-                <input class="d-block w-100" asp-for="User.Username" type="text" placeholder="Username"/>
-                <span class="text-start text-danger" asp-validation-for="User.Username"></span>
-                <input class="d-block w-100 mt-3" asp-for="User.Password" type="password" placeholder="Password"/>
-                <span class="text-start text-danger" asp-validation-for="User.Password"></span>
+            <form class="custom-width" asp-controller="Login" asp-action="LogInNoValidate" id="loginForm">
+                <p class="text-start text-danger" id="modelError"></p>
+                <input class="d-block w-100" name="Username" type="text" placeholder="Username"/>
+                <span class="text-start text-danger" id="usernameError"></span>
+                <input class="d-block w-100 mt-3" name="Password" type="password" placeholder="Password"/>
+                <span class="text-start text-danger"id="passwordError"></span>
                 <div class="form-check mb-4 mt-2">
-                    <input class="form-check-input" type="checkbox" id="rememberPwd" asp-for="RememberUser">
+                    <input class="form-check-input" type="checkbox" id="rememberPwd" name="RememberUser">
                     <label class="form-check-label" for="rememberPwd">
                         Remember me
                     </label>
@@ -31,3 +30,45 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $("#loginForm").submit(
+            function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var modelError = $("#modelError");
+                var usernameError = $("#usernameError");
+                var pwdError = $("#passwordError");
+                $.ajax({
+                    type: "POST",
+                    url: "https://localhost:5001/api/login",
+                    data: JSON.stringify(
+                        form.serializeArray().reduce(
+                            function(m,o) {
+                                if (o.name === 'RememberUser' && o.value === 'on')
+                                    o.value = true;
+
+                                m[o.name] = o.value;
+                                return m;
+                            },
+                            {}
+                        )
+                    ),
+                    contentType: "application/json",
+                    error: function(jqXHR, textStatus, errorThrown) { 
+                        var errors = jqXHR.responseJSON.errors;
+                        modelError.text(errors[""] ?? "");
+                        usernameError.text(errors["Username"] ?? "");
+                        pwdError.text(errors["Password"] ?? "");
+                    },
+                    success: function(data) {
+                        e.currentTarget.submit();
+                    }
+                });
+            }
+        )
+    </script>
+}

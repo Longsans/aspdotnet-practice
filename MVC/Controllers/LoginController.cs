@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using Practice.ViewModels;
-using Practice.Models;
+using Common.Models;
 using Practice.Validators;
 using Practice.Services;
 
@@ -34,10 +34,27 @@ namespace Practice.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
         [Route("Login2")]
         public IActionResult Login2()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> LogInNoValidate(string Username, string Password, bool RememberUser)
+        {
+            return await RedirectToHomeIfAuthenticated(async () =>
+            {
+                await _authService.LogIn(
+                    Username,
+                    Password,
+                    RememberUser,
+                    this.UserService,
+                    this.HttpContext
+                );
+                return RedirectToAction("Index", "Home");
+            });
         }
 
         [AllowAnonymous]
@@ -69,6 +86,7 @@ namespace Practice.Controllers
                     ModelState.AddModelError("", "Username or password is not correct");
                     return View(nameof(Index), model);
                 }
+                
                 return RedirectToAction("Index", "Home");
             });
         }

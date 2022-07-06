@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using Practice.Models;
+using Common.Models;
 
-namespace Practice.Validators
+namespace Common.Validators
 {
     public class ContactValidator : AbstractValidator<Contact>
     {

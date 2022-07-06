@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using Practice.Services;
-using Practice.Validators;
+using Common.Validators;
 using Practice.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +9,18 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddCors(
+    options =>
+    {
+        options.AddDefaultPolicy(
+            policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+    }
+);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +43,7 @@ builder.Services.AddDbContext<WebAppContext>(
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
 builder.Services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
-builder.Services.AddValidatorsFromAssemblyContaining<AccountSettingsValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserCredentialsValidator>();
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -64,6 +75,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthentication();
 

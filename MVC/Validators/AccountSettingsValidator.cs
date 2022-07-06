@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
-using Practice.Models;
+using Common.Models;
+using Common.Validators;
 using Practice.ViewModels;
 
 namespace Practice.Validators

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
-using Practice.Models;
+using Common.Models;
+using Common.Validators;
 using Practice.Services;
 using WebAPI.ApiModels;
 
@@ -22,8 +23,10 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> Login([FromBody] LoginData loginReq)
+        [HttpOptions]
+        public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] LoginData loginReq)
         {
+            LoginResponse response = new();
             var validationResult = await _credentialsValidator.ValidateAsync(
                 loginReq,
                 options =>
@@ -33,33 +36,21 @@ namespace WebAPI.Controllers
             );
             if (!validationResult.IsValid)
             {
-                return BadRequest("Login request data not valid");
+                response.Errors = validationResult.ToDictionarySingle();
+                return BadRequest(response);
             }
 
-            if (!await _authService.LogIn(
-                    loginReq.Username,
-                    loginReq.Password,
-                    loginReq.RememberUser,
-                    this._userService,
-                    this.HttpContext))
+            var user = _userService.FindByUserCredentials(loginReq.Username, loginReq.Password);
+            if (user == null)
             {
-                return StatusCode(403);
-            }
-            var user = _userService.FindWithContactByUsernameForDisplay(loginReq.Username);
-            var response = new
-            {
-                user.Username,
-                user.FirstName,
-                user.LastName,
-                user.Email,
-                user.Age,
-                Contact = new
+                response.Errors = new Dictionary<string, string?>
                 {
-                    user.Contact.Id,
-                    user.Contact.Phone,
-                    user.Contact.Address,
-                }
-            };
+                    { "", "Username or password is incorrect" }
+                };
+                return StatusCode(403, response);
+            }
+
+            response.User = user;
             return Ok(response);
         }
 

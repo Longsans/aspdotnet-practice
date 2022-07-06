@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Practice.Models;
+﻿using Common.Models;
 
 namespace Practice.ViewModels
 {

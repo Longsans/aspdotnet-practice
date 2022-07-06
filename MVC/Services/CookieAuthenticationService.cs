@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using Practice.Models;
 
 namespace Practice.Services
 {
@@ -43,6 +42,7 @@ namespace Practice.Services
                 principal,
                 authProps
             );
+
             return true;
         }
 

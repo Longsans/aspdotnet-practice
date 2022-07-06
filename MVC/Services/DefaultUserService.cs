@@ -1,4 +1,4 @@
-﻿using Practice.Models;
+﻿using Common.Models;
 using Practice.Data;
 using Practice.Utilities;
 using Microsoft.EntityFrameworkCore;
