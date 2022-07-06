@@ -34,6 +34,13 @@ namespace Practice.Controllers
         }
 
         [AllowAnonymous]
+        [Route("Login2")]
+        public IActionResult Login2()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         public async Task<IActionResult> Authenticate(LoginViewModel model)
         {
             return await RedirectToHomeIfAuthenticated(async () =>
