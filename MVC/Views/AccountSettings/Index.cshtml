@@ -6,15 +6,16 @@
 
 <link href="~/css/profile.css" rel="stylesheet" />
 <div>
-    <form method="post">
-        <h1>Personal information</h1>
-        <hr />
-        <h3 class="mb-3">Basic information</h3>
+    <h1>Personal information</h1>
+    <hr />
+
+    <h3 class="mb-3">Basic information</h3>
+    <form method="post" asp-controller="AccountSettings" asp-action="SaveUserInfo" >
         <div class="d-flex flex-column">
             <div class="d-flex flex-column align-items-start">
                 <div class="mb-3">
                     <p class="mb-2">Username</p>
-                    <input class="fw-normal text-dark fw-bold textonly-input pe-none" asp-for="User.Username" readonly/>
+                    <input class="fw-normal text-dark fw-bold textonly-input pe-none" asp-for="User.Username" id="username" readonly/>
                 </div>
                 <div class="d-flex flex-column">
                     <div class="d-flex mb-2">
@@ -45,11 +46,13 @@
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <p class="text-success me-4">@Model.SuccessMessage</p>
-                <input asp-controller="AccountSettings" asp-action="SaveUserInfo" type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
+                <input type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
             </div>
         </div>
+    </form>
 
-        <h3 class="mb-3">Contact</h3>
+    <h3 class="mb-3">Contact</h3>
+    <form method="post" id="contactForm">
         <div class="d-flex flex-column">
             <div class="d-flex align-items-start">
                 <div class="me-4" style="width:208px;">
@@ -65,12 +68,15 @@
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <p class="text-success me-4">@Model.ContactSuccessMessage</p>
-                <input asp-controller="AccountSettings" asp-action="SaveContact" type="submit" class="btn btn-primary align-self-end me-4" value="Save contact"/>
+                <input type="submit" class="btn btn-primary align-self-end me-4" value="Save contact"/>
             </div>
         </div>
-        <br />
-        <h1>Account security</h1>
-        <hr />
+    </form>
+
+    <br />
+    <h1>Account security</h1>
+    <hr />
+    <form method="post" asp-controller="AccountSettings" asp-action="SavePassword">
         <div class="d-flex flex-column mt-4">
             <div class="d-flex justify-content-start">
                 <div class="d-flex flex-column align-items-start me-4">
@@ -90,8 +96,35 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end align-items-center">
-                <input asp-controller="AccountSettings" asp-action="SavePassword" type="submit" class="btn btn-primary me-4" value="Change password"/>
+                <input type="submit" class="btn btn-primary me-4" value="Change password"/>
             </div>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $("#contactForm").submit(
+            function(e) {
+                var form = $(this);
+                var username = $("#username");
+                $.ajax({
+                    type: "PUT",
+                    url: `https://localhost:5001/api/contact/${username.val()}`,
+                    data: FormToJson(form),
+                    contentType: "application/json",
+                    error: function(jqXHR, textStatus, errorThrown) { 
+                        var errors = jqXHR.responseJSON.errors;
+                        modelError.text(errors[""] ?? "");
+                        usernameError.text(errors["Username"] ?? "");
+                        pwdError.text(errors["Password"] ?? "");
+                    },
+                    success: function(data) {
+                        e.currentTarget.submit();
+                    }
+                });
+            }
+        )
+    </script>
+}

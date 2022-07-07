@@ -15,6 +15,9 @@ namespace Common.Validators
             RuleFor(x => x.Address)
                 .NotEmpty().WithMessage(ValidationMessages.NotEmpty)
                 .Length(1, 75).WithMessage(ValidationMessages.Length);
+
+            RuleFor(x => x.UserUsername)
+                .NotEmpty();
         }
     }
 }
