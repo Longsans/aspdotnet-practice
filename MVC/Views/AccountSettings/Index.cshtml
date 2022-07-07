@@ -1,4 +1,6 @@
-﻿@model Practice.ViewModels.AccountSettingsViewModel
+﻿@using Practice.Utilities
+@model Practice.ViewModels.AccountSettingsViewModel
+@inject IConfiguration Config
 @{
     Layout = "_SettingsLayout";
     ViewData["Title"] = "Account Settings";
@@ -10,12 +12,12 @@
     <hr />
 
     <h3 class="mb-3">Basic information</h3>
-    <form method="post" asp-controller="AccountSettings" asp-action="SaveUserInfo" >
+    <form method="post">
         <div class="d-flex flex-column">
             <div class="d-flex flex-column align-items-start">
                 <div class="mb-3">
                     <p class="mb-2">Username</p>
-                    <input class="fw-normal text-dark fw-bold textonly-input pe-none" asp-for="User.Username" id="username" readonly/>
+                    <input class="fw-normal text-dark fw-bold textonly-input pe-none" asp-for="User.Username" readonly/>
                 </div>
                 <div class="d-flex flex-column">
                     <div class="d-flex mb-2">
@@ -46,37 +48,33 @@
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <p class="text-success me-4" id="infoSuccess">@Model.SuccessMessage</p>
-                <input type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
+                <input asp-controller="AccountSettings" asp-action="SaveUserInfo" type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
             </div>
         </div>
-    </form>
 
-    <h3 class="mb-3">Contact</h3>
-    <form method="post" id="contactForm">
+        <h3 class="mb-3">Contact</h3>
         <div class="d-flex flex-column">
             <div class="d-flex align-items-start">
                 <div class="me-4" style="width:208px;">
                     <p class="mb-2">Phone</p>
-                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Phone" name="Phone" />
+                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Phone" />
                     <span class="text-danger d-block" id="phoneError"></span>
                 </div>
                 <div class="ms-3">
                     <p class="mb-2">Address</p>
-                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Address" name="Address" />
+                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Address" />
                     <span class="text-danger d-block" id="addressError"></span>
                 </div>
             </div>
             <div class="d-flex justify-content-end align-items-center">
                 <p class="text-success me-4" id="contactSuccess"></p>
-                <input type="submit" class="btn btn-primary align-self-end me-4" value="Save contact"/>
+                <button type="button" class="btn btn-primary align-self-end me-4" onclick="saveContact()">Save contact</button>
             </div>
         </div>
-    </form>
 
-    <br />
-    <h1>Account security</h1>
-    <hr />
-    <form method="post" asp-controller="AccountSettings" asp-action="SavePassword">
+        <br />
+        <h1>Account security</h1>
+        <hr />
         <div class="d-flex flex-column mt-4">
             <div class="d-flex justify-content-start">
                 <div class="d-flex flex-column align-items-start me-4">
@@ -96,7 +94,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end align-items-center">
-                <input type="submit" class="btn btn-primary me-4" value="Change password"/>
+                <input asp-controller="AccountSettings" asp-action="SavePassword" type="submit" class="btn btn-primary me-4" value="Change password"/>
             </div>
         </div>
     </form>
@@ -115,55 +113,52 @@
             infoSuccess.text("");
         }
 
-        $("#contactForm").submit(
-            function(e) {
-                e.preventDefault();
+        function saveContact() {
+            var phoneError = $("#phoneError");
+            var addressError = $("#addressError");
+            var contactSuccess = $("#contactSuccess");
+            var username = $("#User_Username").val();
+            var formObj = {
+                UserUsername: username,
+                Phone: $("#User_Contact_Phone").val(),
+                Address: $("#User_Contact_Address").val()
+            };
+            var formJson = JSON.stringify(formObj);
 
-                var form = $(this);
-                var phoneError = $("#phoneError");
-                var addressError = $("#addressError");
-                var contactSuccess = $("#contactSuccess");
-                var username = $("#username");
-                
-                var formObj = FormToJson(form);
-                formObj.UserUsername = username.val();
-                var formJson = JSON.stringify(formObj);
-                console.log(formObj);
-                clearUI();
+            clearUI();
 
-                $.ajax({
-                    type: "PUT",
-                    url: `https://localhost:5001/api/contact/${username.val()}`,
-                    data: formJson,
-                    contentType: "application/json",
-                    statusCode: {
-                        400: function(jqXHR) {
-                            var errors = jqXHR.responseJSON;
-                            phoneError.text(errors["Phone"] ?? "");
-                            addressError.text(errors["Address"] ?? "");
-                        },
-                        404: function() {
-                            $.ajax({
-                                type: "POST",
-                                url: `https://localhost:5001/api/contact`,
-                                data: formJson,
-                                contentType: "application/json",
-                                statusCode: {
-                                    409: function() {
-                                        alert("Something went wrong, your contact already exists. Try reloading the page");
-                                    }
-                                },
-                                success: function() {
-                                    contactSuccess.text("Saved contact successfully!");
-                                }
-                            })
-                        }
+            $.ajax({
+                type: "PUT",
+                url: `@Config[Statics.ApiUrl]/contact/${username}`,
+                data: formJson,
+                contentType: "application/json",
+                statusCode: {
+                    400: function(jqXHR) {
+                        var errors = jqXHR.responseJSON;
+                        phoneError.text(errors["Phone"] ?? "");
+                        addressError.text(errors["Address"] ?? "");
                     },
-                    success: function(data) {
-                        contactSuccess.text("Saved contact successfully!");
+                    404: function() {
+                        $.ajax({
+                            type: "POST",
+                            url: "@Config[Statics.ApiUrl]/contact",
+                            data: formJson,
+                            contentType: "application/json",
+                            statusCode: {
+                                409: function() {
+                                    alert("Something went wrong, your contact already exists. Try reloading the page");
+                                }
+                            },
+                            success: function() {
+                                contactSuccess.text("Saved contact successfully!");
+                            }
+                        })
                     }
-                });
-            }
-        );
+                },
+                success: function(data) {
+                    contactSuccess.text("Saved contact successfully!");
+                }
+            });
+        }
     </script>
 }

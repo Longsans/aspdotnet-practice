@@ -38,18 +38,21 @@ namespace Practice.Controllers
         [Route("Login2")]
         public IActionResult Login2()
         {
-            return View();
+            return RedirectToHomeIfAuthenticated(() =>
+            {
+                return View();
+            });
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> LogInNoValidate(string Username, string Password, bool RememberUser)
+        public async Task<IActionResult> LogInNoValidate(LoginViewModel model)
         {
             return await RedirectToHomeIfAuthenticated(async () =>
             {
                 await _authService.LogIn(
-                    Username,
-                    Password,
-                    RememberUser,
+                    model.User.Username,
+                    model.User.Password,
+                    model.RememberUser,
                     this.UserService,
                     this.HttpContext
                 );

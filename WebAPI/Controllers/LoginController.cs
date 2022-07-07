@@ -14,17 +14,22 @@ namespace WebAPI.Controllers
         private readonly IAuthenticationService _authService;
         private readonly IUserService _userService;
         private readonly IValidator<IUserCredentials> _credentialsValidator;
+        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(IAuthenticationService authService, IUserService userService, IValidator<IUserCredentials> credentialsValidator)
+        public LoginController(
+            IAuthenticationService authService, 
+            IUserService userService, 
+            IValidator<IUserCredentials> credentialsValidator,
+            ILogger<LoginController> logger)
         {
             _authService = authService;
             _userService = userService;
             _credentialsValidator = credentialsValidator;
+            _logger = logger;
         }
 
         [HttpPost]
-        [HttpOptions]
-        public async Task<ActionResult<LoginResponse>> Authenticate([FromBody] LoginData loginReq)
+        public async Task<ActionResult<LoginResponse>> Authenticate(LoginData loginReq)
         {
             LoginResponse response = new();
             var validationResult = await _credentialsValidator.ValidateAsync(

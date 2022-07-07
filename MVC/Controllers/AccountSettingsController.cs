@@ -45,6 +45,8 @@ namespace Practice.Controllers
                     options.IncludeRuleSets("UserInfo");
                 }
             );
+
+            model.User = UserService.FindWithContactByUsernameForDisplay(model.User.Username);
             if (!validateResult.IsValid)
             {
                 validateResult.AddToModelState(ModelState, "User");
