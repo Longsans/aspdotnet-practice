@@ -17,12 +17,22 @@
                 </div>
                 <input class="d-block w-100" type="text" asp-for="User.Username" placeholder="Username" />
                 <span class="text-start text-danger" asp-validation-for="User.Username"></span>
+
                 <input class="d-block w-100 mt-3" type="password" asp-for="User.Password" placeholder="Password" />
                 <span class="text-start text-danger" asp-validation-for="User.Password"></span>
+
+                <input class="d-block w-100 mt-3" type="text" asp-for="User.FirstName" placeholder="First name" />
+                <span class="text-start text-danger" asp-validation-for="User.FirstName"></span>
+
+                <input class="d-block w-100 mt-3" type="text" asp-for="User.LastName" placeholder="Last name" />
+                <span class="text-start text-danger" asp-validation-for="User.LastName"></span>
+
                 <input class="d-block w-100 mt-3" type="email" asp-for="User.Email" placeholder="Email" />
                 <span class="text-start text-danger" asp-validation-for="User.Email"></span>
+
                 <input class="d-block mb-2 number-box mt-3" type="number" min="0" max="200" asp-for="User.Age" placeholder="Age" />
                 <span class="text-start text-danger" asp-validation-for="User.Age"></span>
+                
                 <input class="btn btn-danger d-block mb-3 mt-4 w-100" type="submit" value="Register"/>
             </form>
         </div>

@@ -13,17 +13,22 @@ namespace WebAPI.Controllers
     {
         private readonly IUserService _userService;
         private readonly IValidator<Contact> _contactValidator;
+        private readonly ILogger<ContactController> _logger;
 
-        public ContactController(IUserService userService, IValidator<Contact> contactValidator)
+        public ContactController(
+            IUserService userService, 
+            IValidator<Contact> contactValidator,
+            ILogger<ContactController> logger)
         {
             _userService = userService;
             _contactValidator = contactValidator;
+            this._logger = logger;
         }
 
         [HttpGet("{username}")]
-        public Contact? GetContact(string username)
+        public ActionResult<Contact?> GetContact(string username)
         {
-            return _userService.FindContactByUsername(username);
+            return Ok(_userService.FindContactByUsername(username));
         }
 
         [HttpPost]
@@ -39,7 +44,10 @@ namespace WebAPI.Controllers
             if (existing != null)
             {
                 return Conflict(
-                    ToErrorObject($"contact with username {contact.UserUsername} already exists"));
+                    new Dictionary<string, string>
+                    {
+                        { "username", $"contact with username {contact.UserUsername} already exists" }
+                    });
             }
 
             await _userService.AddContact(contact);
@@ -60,7 +68,10 @@ namespace WebAPI.Controllers
             if (username != update.UserUsername)
             {
                 return BadRequest(
-                    ToErrorObject("route value username must be the same as contact.UserUsername"));
+                    new Dictionary<string, string>
+                    {
+                        { "username", "route value username must be the same as contact.UserUsername" },
+                    });
             }
 
             var existing = _userService.FindContactByUsername(update.UserUsername);
@@ -71,14 +82,6 @@ namespace WebAPI.Controllers
 
             await _userService.UpdateContact(update);
             return NoContent();
-        }
-
-        private static object ToErrorObject(params string[] errorMessages)
-        {
-            return new
-            {
-                errors = errorMessages
-            };
         }
     }
 }
