@@ -4,7 +4,7 @@ namespace Common.Validators
 {
     public static class ValidatorExtensions
     {
-        public static Dictionary<string, string?> ToDictionarySingle(this ValidationResult result)
+        public static Dictionary<string, string?> ToErrorDictionary(this ValidationResult result)
         {
             return result.Errors
                 .GroupBy(x => x.PropertyName)

@@ -30,14 +30,14 @@ namespace Practice.Services
         public User? FindByUsername(string username)
         {
             return _context.Users
-                .FirstOrDefault(x => x.Username == username);
+                .SingleOrDefault(x => x.Username == username);
         }
 
         public User? FindWithContactByUsername(string username)
         {
             return _context.Users
                 .Include(u => u.Contact)
-                .FirstOrDefault(x => x.Username == username);
+                .SingleOrDefault(x => x.Username == username);
         }
 
         public User? FindWithContactByUsernameForDisplay(string username)
@@ -45,7 +45,7 @@ namespace Practice.Services
             return _context.Users
                 .Include(u => u.Contact)
                 .AsNoTracking()
-                .FirstOrDefault(x => x.Username == username);
+                .SingleOrDefault(x => x.Username == username);
         }
 
         public User? FindByUserCredentials(string username, string password)
@@ -125,19 +125,6 @@ namespace Practice.Services
             }
             _context.Contacts.Remove(existing);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task AddOrUpdateContactIfExists(Contact contact)
-        {
-            var existing = FindContactByUsername(contact.UserUsername);
-            if (existing == null)
-            {
-                await AddContact(contact);
-            }
-            else
-            {
-                await UpdateContact(contact);
-            }
         }
     }
 }

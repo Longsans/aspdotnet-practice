@@ -9,7 +9,7 @@ namespace Common.Validators
         {
             RuleFor(x => x.Phone)
                 .NotEmpty().WithMessage(ValidationMessages.NotEmpty)
-                .Matches(@"^0[1-9]+$").WithMessage("Phone number not in correct format")
+                .Matches(ValidationRegex.PhoneRegex).WithMessage("Phone number not in correct format")
                 .Length(10, 11).WithMessage("Phone number must be from {MinLength} to {MaxLength} digits");
 
             RuleFor(x => x.Address)

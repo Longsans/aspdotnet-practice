@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
             var validationResult = await _contactValidator.ValidateAsync(contact);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.ToDictionarySingle());
+                return BadRequest(validationResult.ToErrorDictionary());
             }
 
             var existing = _userService.FindContactByUsername(contact.UserUsername);
@@ -63,7 +63,7 @@ namespace WebAPI.Controllers
             var validationResult = await _contactValidator.ValidateAsync(update);
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.ToDictionarySingle());
+                return BadRequest(validationResult.ToErrorDictionary());
             }
             if (username != update.UserUsername)
             {

@@ -41,7 +41,7 @@ namespace WebAPI.Controllers
             );
             if (!validationResult.IsValid)
             {
-                response.Errors = validationResult.ToDictionarySingle();
+                response.Errors = validationResult.ToErrorDictionary();
                 return BadRequest(response);
             }
 

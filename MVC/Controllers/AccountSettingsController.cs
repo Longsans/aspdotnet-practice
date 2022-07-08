@@ -69,7 +69,16 @@ namespace Practice.Controllers
             }
 
             model.User.Contact.UserUsername = model.User.Username;
-            await UserService.AddOrUpdateContactIfExists(model.User.Contact);
+            var contact = UserService.FindContactByUsername(model.User.Contact.UserUsername);
+            if (contact != null)
+            {
+                await UserService.UpdateContact(model.User.Contact);
+            }
+            else
+            {
+                await UserService.AddContact(model.User.Contact);
+            }
+
             model.ContactSuccessMessage = "Save contact success!";
             return View(nameof(Index), model);
         }

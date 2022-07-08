@@ -17,7 +17,6 @@ namespace Practice.Services
         Contact? FindContactByUsername(string username);
         Task AddContact(Contact contact);
         Task UpdateContact(Contact update);
-        Task AddOrUpdateContactIfExists(Contact contact);
         Task DeleteContactByUsername(string username);
     }
 }
