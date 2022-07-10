@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Common.Services;
 
 namespace Practice.Services
 {
-    public class CookieAuthenticationService : IAuthenticationService
+    public class CookieAuthService : IClaimsBasedAuthService
     {
         public async Task<bool> LogIn(
             string username, 
@@ -20,11 +21,11 @@ namespace Practice.Services
             }
 
             var claimsIdentity = new ClaimsIdentity(
-                    new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, username)
-                    },
-                    CookieAuthenticationDefaults.AuthenticationScheme);
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, username)
+                },
+                CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(claimsIdentity);
             var authProps = new AuthenticationProperties
             {

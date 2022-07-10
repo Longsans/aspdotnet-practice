@@ -1,10 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using FluentValidation;
-using Practice.Services;
-using Common.Validators;
-using Practice.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
+using FluentValidation;
+using Common.Services;
+using Common.Validators;
+using Practice.Services;
+using Practice.Data;
+using WebAPI.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +36,7 @@ builder.Services.AddControllers()
     {
         options.SuppressModelStateInvalidFilter = true;
     });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -50,28 +56,32 @@ builder.Services.AddDbContext<WebAppContext>(
     }
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
-builder.Services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
+builder.Services.AddScoped<ITokenBasedAuthService<string>, JwtAuthService>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserCredentialsValidator>();
 
 builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(
-    options =>
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        options.Cookie.Name = "Authentication";
-    }
-);
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSecret"])),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
 
-//builder.Services.AddAuthorization(
-//    options =>
-//    {
-//        options.FallbackPolicy =
-//            new AuthorizationPolicyBuilder()
-//                .RequireAuthenticatedUser()
-//                .Build();
-//    }
-//);
-
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy =
+            new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+});
 
 var app = builder.Build();
 

@@ -64,6 +64,7 @@
                         pwdError.text(errors["Password"] ?? "");
                     },
                     success: function(data) {
+                        localStorage.setItem("token", data.jwt);
                         e.currentTarget.submit();
                     }
                 });

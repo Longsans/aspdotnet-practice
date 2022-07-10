@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using FluentValidation;
 using Common.Models;
 using Common.Validators;
-using Practice.Services;
+using Common.Services;
 using WebAPI.ApiModels;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -11,13 +14,13 @@ namespace WebAPI.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IAuthenticationService _authService;
+        private readonly ITokenBasedAuthService<string> _authService;
         private readonly IUserService _userService;
         private readonly IValidator<IUserCredentials> _credentialsValidator;
         private readonly ILogger<LoginController> _logger;
 
         public LoginController(
-            IAuthenticationService authService, 
+            ITokenBasedAuthService<string> authService, 
             IUserService userService, 
             IValidator<IUserCredentials> credentialsValidator,
             ILogger<LoginController> logger)
@@ -28,6 +31,7 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<LoginResponse>> Authenticate(LoginData loginReq)
         {
@@ -37,15 +41,15 @@ namespace WebAPI.Controllers
                 options =>
                 {
                     options.IncludeRuleSets("Username", "LoginPassword");
-                }
-            );
+                });
             if (!validationResult.IsValid)
             {
                 response.Errors = validationResult.ToErrorDictionary();
                 return BadRequest(response);
             }
 
-            var user = _userService.FindByUserCredentials(loginReq.Username, loginReq.Password);
+            var user = _userService.FindByUserCredentials(
+                loginReq.Username, loginReq.Password);
             if (user == null)
             {
                 response.Errors = new Dictionary<string, string?>
@@ -55,19 +59,13 @@ namespace WebAPI.Controllers
                 return StatusCode(403, response);
             }
 
+            response.Jwt = _authService.CreateToken(
+                new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Username)
+                });
             response.User = user;
             return Ok(response);
-        }
-
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            if (!HttpContext.User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
-            await _authService.LogOut(this.HttpContext);
-            return Ok();
         }
     }
 }

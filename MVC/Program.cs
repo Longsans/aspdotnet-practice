@@ -2,10 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FluentValidation;
+using Common.Validators;
+using Common.Services;
 using Practice.Data;
 using Practice.Services;
 using Practice.Validators;
-using Common.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,7 @@ builder.Services.AddDbContext<WebAppContext>(
     }
 );
 builder.Services.AddScoped<IUserService, DefaultUserService>();
-builder.Services.AddScoped<IAuthenticationService, CookieAuthenticationService>();
+builder.Services.AddScoped<IClaimsBasedAuthService, CookieAuthService>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AccountSettingsValidator>();
 

@@ -17,3 +17,8 @@ function FormToJson(form) {
         {}
     );
 }
+
+function DeleteToken() {
+    console.log("suck");
+    localStorage.removeItem("token");
+}

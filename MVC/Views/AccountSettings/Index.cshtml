@@ -127,6 +127,9 @@
 
             clearUI();
 
+            $.ajaxSetup({
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("token")}` }
+            });
             $.ajax({
                 type: "PUT",
                 url: `@Config[Statics.ApiUrl]/contact/${username}`,
@@ -138,6 +141,9 @@
                         phoneError.text(errors["Phone"] ?? "");
                         addressError.text(errors["Address"] ?? "");
                     },
+                    401: function() {
+                        alert("You are not authorized to perform this action.");
+                    },
                     404: function() {
                         $.ajax({
                             type: "POST",
@@ -146,7 +152,7 @@
                             contentType: "application/json",
                             statusCode: {
                                 409: function() {
-                                    alert("Something went wrong, your contact already exists. Try reloading the page");
+                                    alert("Something went wrong, your contact already exists. Try reloading the page.");
                                 }
                             },
                             success: function() {

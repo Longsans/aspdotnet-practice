@@ -1,6 +1,8 @@
-﻿namespace Practice.Services
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Common.Services
 {
-    public interface IAuthenticationService
+    public interface IClaimsBasedAuthService
     {
         Task<bool> LogIn(
             string username, 

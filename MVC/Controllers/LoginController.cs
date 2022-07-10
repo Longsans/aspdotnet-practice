@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using Practice.ViewModels;
 using Common.Models;
+using Common.Services;
 using Practice.Validators;
-using Practice.Services;
 
 namespace Practice.Controllers
 {
     public class LoginController : BaseUserCredentialsController
     {
         private readonly IValidator<IUserCredentials> _userCredentialsValidator;
-        private readonly IAuthenticationService _authService;
+        private readonly IClaimsBasedAuthService _authService;
 
-        public LoginController(IValidator<IUserCredentials> userCredentialsValidator, IAuthenticationService authService)
+        public LoginController(IValidator<IUserCredentials> userCredentialsValidator, IClaimsBasedAuthService authService)
         {
             _userCredentialsValidator = userCredentialsValidator;
             _authService = authService;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Practice.Services;
+using Common.Services;
 
 namespace Practice.Controllers
 {

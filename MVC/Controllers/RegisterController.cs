@@ -10,7 +10,6 @@ namespace Practice.Controllers
     [AllowAnonymous]
     public class RegisterController : BaseUserCredentialsController
     {
-        private static readonly string _emailErrorKey = "User.Email";
         private readonly IValidator<User> _userValidator;
 
         public RegisterController(IValidator<User> userValidator)

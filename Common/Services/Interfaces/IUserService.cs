@@ -1,6 +1,6 @@
 ﻿using Common.Models;
 
-namespace Practice.Services
+namespace Common.Services
 {
     public interface IUserService
     {
