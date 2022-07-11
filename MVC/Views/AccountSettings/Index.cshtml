@@ -1,0 +1,170 @@
+﻿@using Practice.Utilities
+@model Practice.ViewModels.AccountSettingsViewModel
+@inject IConfiguration Config
+@{
+    Layout = "_SettingsLayout";
+    ViewData["Title"] = "Account Settings";
+}
+
+<link href="~/css/profile.css" rel="stylesheet" />
+<div>
+    <h1>Personal information</h1>
+    <hr />
+
+    <h3 class="mb-3">Basic information</h3>
+    <form method="post">
+        <div class="d-flex flex-column">
+            <div class="d-flex flex-column align-items-start">
+                <div class="mb-3">
+                    <p class="mb-2">Username</p>
+                    <input class="fw-normal text-dark fw-bold textonly-input pe-none" asp-for="User.Username" readonly/>
+                </div>
+                <div class="d-flex flex-column">
+                    <div class="d-flex mb-2">
+                        <div class="me-4" style="width:208px;">
+                            <p class="mb-2">First Name</p>
+                            <input type="text" class="fw-normal mb-2" asp-for="User.FirstName" />
+                            <span class="text-danger d-block" asp-validation-for="User.FirstName"></span>
+                        </div>
+                        <div class="ms-3">
+                            <p class="mb-2">Last Name</p>
+                            <input type="text" class="fw-normal mb-2" asp-for="User.LastName" />
+                            <span class="text-danger d-block" asp-validation-for="User.LastName"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="me-4" style="width:208px;">
+                            <p class="mb-2">Email</p>
+                            <input type="email" class="fw-normal mb-2" asp-for="User.Email" />
+                            <span class="text-danger d-block" asp-validation-for="User.Email"></span>
+                        </div>
+                        <div class="ms-3">
+                            <p class="mb-2">Age</p>
+                            <input type="number" min="0" max="200" class="fw-normal mb-2 number-box" asp-for="User.Age" />
+                            <span class="text-danger d-block" asp-validation-for="User.Age"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <p class="text-success me-4" id="infoSuccess">@Model.SuccessMessage</p>
+                <input asp-controller="AccountSettings" asp-action="SaveUserInfo" type="submit" class="btn btn-primary align-self-end me-4" value="Save Info"/>
+            </div>
+        </div>
+
+        <h3 class="mb-3">Contact</h3>
+        <div class="d-flex flex-column">
+            <div class="d-flex align-items-start">
+                <div class="me-4" style="width:208px;">
+                    <p class="mb-2">Phone</p>
+                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Phone" />
+                    <span class="text-danger d-block" id="phoneError"></span>
+                </div>
+                <div class="ms-3">
+                    <p class="mb-2">Address</p>
+                    <input type="text" class="fw-normal mb-2" asp-for="User.Contact.Address" />
+                    <span class="text-danger d-block" id="addressError"></span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <p class="text-success me-4" id="contactSuccess"></p>
+                <button type="button" class="btn btn-primary align-self-end me-4" onclick="saveContact()">Save contact</button>
+            </div>
+        </div>
+
+        <br />
+        <h1>Account security</h1>
+        <hr />
+        <div class="d-flex flex-column mt-4">
+            <div class="d-flex justify-content-start">
+                <div class="d-flex flex-column align-items-start me-4">
+                    <p class="mb-4">Current password:</p>
+                    <p class="mb-4">New password:</p>
+                    <p class="mb-4">Re-enter new password:</p>
+                </div>
+                <div class="d-flex flex-column align-items-start me-4">
+                    <input type="password" class="mb-3" asp-for="CurrentPassword"/>
+                    <input type="password" class="mb-3" asp-for="User.Password"/>
+                    <input type="password" class="mb-3" asp-for="RePassword"/>
+                </div>
+                <div class="d-flex flex-column align-items-start">
+                    <span class="text-danger fixed-line-24 mb-4" asp-validation-for="CurrentPassword"></span>
+                    <span class="text-danger fixed-line-24 mb-4" asp-validation-for="User.Password"></span>
+                    <span class="text-danger fixed-line-24 mb-4" asp-validation-for="RePassword"></span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <input asp-controller="AccountSettings" asp-action="SavePassword" type="submit" class="btn btn-primary me-4" value="Change password"/>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function clearUI () {
+            var phoneError = $("#phoneError");
+            var addressError = $("#addressError");
+            var contactSuccess = $("#contactSuccess");
+            var infoSuccess = $("#infoSuccess");
+            phoneError.text("");
+            addressError.text("");
+            contactSuccess.text("");
+            infoSuccess.text("");
+        }
+
+        function saveContact() {
+            var phoneError = $("#phoneError");
+            var addressError = $("#addressError");
+            var contactSuccess = $("#contactSuccess");
+            var username = $("#User_Username").val();
+            var formObj = {
+                UserUsername: username,
+                Phone: $("#User_Contact_Phone").val(),
+                Address: $("#User_Contact_Address").val()
+            };
+            var formJson = JSON.stringify(formObj);
+
+            clearUI();
+
+            $.ajaxSetup({
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("token")}` }
+            });
+            $.ajax({
+                type: "PUT",
+                url: `@Config[Statics.ApiUrl]/contact/${username}`,
+                data: formJson,
+                contentType: "application/json",
+                statusCode: {
+                    400: function(jqXHR) {
+                        var errors = jqXHR.responseJSON;
+                        phoneError.text(errors["Phone"] ?? "");
+                        addressError.text(errors["Address"] ?? "");
+                    },
+                    401: function() {
+                        alert("You are not authorized to perform this action.");
+                    },
+                    404: function() {
+                        $.ajax({
+                            type: "POST",
+                            url: "@Config[Statics.ApiUrl]/contact",
+                            data: formJson,
+                            contentType: "application/json",
+                            statusCode: {
+                                409: function() {
+                                    alert("Something went wrong, your contact already exists. Try reloading the page.");
+                                }
+                            },
+                            success: function() {
+                                contactSuccess.text("Saved contact successfully!");
+                            }
+                        })
+                    }
+                },
+                success: function(data) {
+                    contactSuccess.text("Saved contact successfully!");
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,74 @@
+﻿@using Practice.Utilities
+@model Practice.ViewModels.LoginViewModel
+@inject IConfiguration Config
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Login";
+}
+
+<div class="d-flex flex-column flex-grow-1 justify-content-center">
+    <div class="d-flex pad-s">
+        <div class="d-flex flex-column justify-content-center">
+            <h1 class="fw-normal text-start mt-3 mb-4">Login</h1>
+            <form class="custom-width" asp-controller="Login" asp-action="LogInNoValidate" id="loginForm">
+                <p class="text-start text-danger" id="modelError"></p>
+                <input class="d-block w-100" asp-for="User.Username" type="text" placeholder="Username"/>
+                <span class="text-start text-danger" id="usernameError"></span>
+                <input class="d-block w-100 mt-3" asp-for="User.Password" type="password" placeholder="Password"/>
+                <span class="text-start text-danger"id="passwordError"></span>
+                <div class="form-check mb-4 mt-2">
+                    <input class="form-check-input" asp-for="RememberUser" type="checkbox">
+                    <label class="form-check-label" for="rememberPwd">
+                        Remember me
+                    </label>
+                </div>
+                <input class="btn btn-primary d-block mb-3 w-100" type="submit" value="Login" />
+            </form>
+        </div>
+        <div class="flex-grow-1 d-flex flex-column">
+            <div class="flex-grow-1 pad-s">
+                <img src="~/images/mountain-bg.jpg" class="img-fluid"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#loginForm").submit(
+            function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var modelError = $("#modelError");
+                var usernameError = $("#usernameError");
+                var pwdError = $("#passwordError");
+
+                var apiUrl = "@Config[Statics.ApiUrl]/login";
+
+                $.ajax({
+                    type: "POST",
+                    url: apiUrl,
+                    data: JSON.stringify(
+                        {
+                            Username: $("#User_Username").val(),
+                            Password: $("#User_Password").val(),
+                            RememberUser: $("#RememberUser").is(":checked")
+                        }
+                    ),
+                    contentType: "application/json",
+                    error: function(jqXHR, textStatus, errorThrown) { 
+                        var errors = jqXHR.responseJSON.errors;
+                        modelError.text(errors[""] ?? "");
+                        usernameError.text(errors["Username"] ?? "");
+                        pwdError.text(errors["Password"] ?? "");
+                    },
+                    success: function(data) {
+                        localStorage.setItem("token", data.jwt);
+                        e.currentTarget.submit();
+                    }
+                });
+            }
+        )
+    </script>
+}

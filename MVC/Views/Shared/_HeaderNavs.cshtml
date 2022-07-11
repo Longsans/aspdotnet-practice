@@ -1,0 +1,18 @@
+﻿@{
+    if(Context.User.Identity!.IsAuthenticated) {
+    <a class="nav-link text-dark d-inline" asp-area="" asp-controller="Home" asp-action="Profile">
+                                <text>Profile</text>
+    </a>
+    <a class="nav-link text-danger d-inline" asp-area="" asp-controller="Login" asp-action="Logout" onclick="DeleteToken()">
+                                <text>Logout</text>
+    </a>
+    }
+    else {
+    <a class="nav-link text-dark d-inline" asp-area="" asp-controller="Login" asp-action="Index">
+                                <text>Login</text>
+    </a>
+    <a class="nav-link text-danger d-inline" asp-area="" asp-controller="Register" asp-action="Index">
+                                <text>Register</text>
+    </a>
+    }
+}
