@@ -5,7 +5,7 @@ namespace Practice.Controllers
 {
     public class BaseUserCredentialsController : Controller
     {
-        private IUserService _userService;
+        protected IUserService _userService;
         protected IUserService UserService => _userService ??= HttpContext.RequestServices.GetRequiredService<IUserService>();
 
         protected static readonly string _sessionKeyName = "username";

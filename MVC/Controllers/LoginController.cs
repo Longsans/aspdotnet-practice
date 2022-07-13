@@ -19,6 +19,15 @@ namespace Practice.Controllers
             _authService = authService;
         }
 
+        // constructor for unit testing purpose
+        public LoginController(
+            IValidator<IUserCredentials> userCredentialsValidator, 
+            IClaimsBasedAuthService authService,
+            IUserService userService) : this(userCredentialsValidator, authService)
+        {
+            _userService = userService;
+        }
+
         [AllowAnonymous]
         public IActionResult Index()
         {
