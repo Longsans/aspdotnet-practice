@@ -48,18 +48,7 @@ namespace UnitTests.ControllerTests
                 UserUsername = username
             };
 
-            userServiceMock
-                .Setup(
-                    x => x.FindContactByUsername(It.IsAny<string>()))
-                .Returns(() =>
-                {
-                    Contact? contact = null;
-                    if (username.ToLower() == "long")
-                    {
-                        contact = new Contact();
-                    }
-                    return contact;
-                });
+            ConfigureStubUserService(userServiceMock, username);
             userServiceMock.Setup(x => x.AddContact(It.IsAny<Contact>()))
                 .Verifiable();
             var controller = new ContactController(userServiceMock.Object, contactValidator);
