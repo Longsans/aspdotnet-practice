@@ -14,16 +14,13 @@ namespace WebAPI.Controllers
     {
         private readonly IUserService _userService;
         private readonly IValidator<Contact> _contactValidator;
-        private readonly ILogger<ContactController> _logger;
 
         public ContactController(
             IUserService userService, 
-            IValidator<Contact> contactValidator,
-            ILogger<ContactController> logger)
+            IValidator<Contact> contactValidator)
         {
             _userService = userService;
             _contactValidator = contactValidator;
-            this._logger = logger;
         }
 
         [HttpGet("{username}")]
@@ -47,7 +44,7 @@ namespace WebAPI.Controllers
                 return Conflict(
                     new Dictionary<string, string>
                     {
-                        { "username", $"contact with username {contact.UserUsername} already exists" }
+                        { "username", $"Contact with username {contact.UserUsername} already exists" }
                     });
             }
 
@@ -71,7 +68,7 @@ namespace WebAPI.Controllers
                 return BadRequest(
                     new Dictionary<string, string>
                     {
-                        { "username", "route value username must be the same as contact.UserUsername" },
+                        { "username", "Route value username must be the same as contact.UserUsername" },
                     });
             }
 
