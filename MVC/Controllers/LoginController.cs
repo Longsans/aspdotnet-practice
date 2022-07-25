@@ -20,13 +20,13 @@ namespace Practice.Controllers
         }
 
         // constructor for unit testing purpose
-        public LoginController(
-            IValidator<IUserCredentials> userCredentialsValidator, 
-            IClaimsBasedAuthService authService,
-            IUserService userService) : this(userCredentialsValidator, authService)
-        {
-            _userService = userService;
-        }
+        //public LoginController(
+        //    IValidator<IUserCredentials> userCredentialsValidator, 
+        //    IClaimsBasedAuthService authService,
+        //    IUserService userService) : this(userCredentialsValidator, authService)
+        //{
+        //    _userService = userService;
+        //}
 
         [AllowAnonymous]
         public IActionResult Index()

@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
                 {
                     { "", "Username or password is incorrect" }
                 };
-                return StatusCode(403, response);
+                return StatusCode(403, response); // Forbidden
             }
 
             response.Jwt = _authService.CreateToken(
