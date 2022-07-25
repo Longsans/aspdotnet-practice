@@ -164,7 +164,7 @@
                 success: function(data) {
                     contactSuccess.text("Saved contact successfully!");
                 }
-            });
+            }).catch(() => alert("Connection error!"));
         }
     </script>
 }
