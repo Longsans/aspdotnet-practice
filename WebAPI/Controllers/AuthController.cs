@@ -108,7 +108,13 @@ namespace WebAPI.Controllers
         [Route("api/logout")]
         public ActionResult LogOut()
         {
-            this.Response.Cookies.Delete(Statics.RefreshTokenCookieName);
+            this.Response.Cookies.Delete(
+                Statics.RefreshTokenCookieName, 
+                new CookieOptions 
+                {
+                    SameSite = SameSiteMode.None,
+                    Secure = true
+                });
             return NoContent();
         }
     }
