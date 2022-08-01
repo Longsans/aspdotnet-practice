@@ -4,6 +4,7 @@ namespace WebAPI.Services
 {
     public interface ITokenBasedAuthService<TTokenType>
     {
-        TTokenType CreateToken(params Claim[] claims);
+        TTokenType CreateAccessToken(params Claim[] claims);
+        TTokenType CreateRefreshToken(params Claim[] claims);
     }
 }
