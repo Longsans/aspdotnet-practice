@@ -10,7 +10,7 @@ using Common.Validators;
 using Practice.Services;
 using Practice.Data;
 using WebAPI.Services;
-
+using WebAPI.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +26,8 @@ builder.Services.AddCors(
             {
                 policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             });
     }
 );
@@ -69,7 +70,28 @@ builder.Services
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JwtSecret"])),
+                Encoding.UTF8.GetBytes(builder.Configuration[Statics.SecretConfigName])),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    })
+    .AddJwtBearer(Statics.RefreshTokenAuthScheme, options =>
+    {
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies[Statics.RefreshTokenCookieName];
+                return Task.CompletedTask;
+            }
+        };
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration[Statics.SecretConfigName])),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -77,6 +99,11 @@ builder.Services
 
 builder.Services.AddAuthorization(options =>
 {
+    var refreshTokenPolicyBuilder = new AuthorizationPolicyBuilder(Statics.RefreshTokenAuthScheme);
+    options.AddPolicy(
+        Statics.RefreshTokenPolicy, 
+        refreshTokenPolicyBuilder.RequireAuthenticatedUser().Build());
+
     options.FallbackPolicy =
             new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
